@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { NAV_LINKS, WHATSAPP_LINK, COMPANY } from "@/lib/siteConfig";
+import TrackApplicationModal from "./TrackApplicationModal";
 
 /**
  * Smooth Scroll لأي قسم في الصفحة.
@@ -79,6 +80,7 @@ function MenuIcon({ open }) {
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [trackOpen, setTrackOpen] = useState(false);
 
   const handleNav = (event, id) => {
     event.preventDefault();
@@ -126,8 +128,7 @@ export default function Header() {
             width={114}
             height={80}
             priority
-            sizes="(max-width: 640px) 90px, 130px"
-            className="h-12 w-auto object-contain sm:h-16 lg:h-[4.5rem]"
+            className="block h-10 w-auto rounded-lg bg-white p-0.5 object-contain sm:h-16 sm:rounded-none sm:bg-transparent sm:p-0 lg:h-[4.5rem]"
           />
         </a>
 
@@ -147,6 +148,14 @@ export default function Header() {
             </a>
           ))}
         </nav>
+
+        <button
+          type="button"
+          onClick={() => setTrackOpen(true)}
+          className="hidden shrink-0 rounded-full bg-gradient-to-l from-amber-500 to-yellow-400 px-3 py-2 text-xs font-extrabold text-slate-950 shadow-sm shadow-amber-500/30 md:block sm:px-4 sm:text-sm"
+        >
+          تتبع طلبك
+        </button>
 
         {/* زرار واتساب - على الشمال */}
         <motion.a
@@ -201,9 +210,19 @@ export default function Header() {
                   {link.label}
                 </a>
               ))}
+              <button
+                type="button"
+                onClick={() => { setMenuOpen(false); setTrackOpen(true); }}
+                className="mt-1 rounded-lg bg-amber-50 px-3 py-2.5 text-right text-sm font-bold text-amber-800"
+              >
+                تتبع طلبك
+              </button>
             </div>
           </motion.nav>
         )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {trackOpen && <TrackApplicationModal onClose={() => setTrackOpen(false)} />}
       </AnimatePresence>
     </motion.header>
   );

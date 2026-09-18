@@ -4,6 +4,14 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 /*
@@ -19,6 +27,8 @@ footer[id] {
 body {
   background-color: #ffffff;
   color: #0f172a;
+  max-width: 100%;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -26,6 +36,38 @@ body {
   line-height: 1.9;
   letter-spacing: 0.012em;
   word-spacing: 0.05em;
+  overflow-x: hidden;
+}
+
+main,
+section,
+footer {
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+span,
+a,
+li,
+label {
+  overflow-wrap: break-word;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
 }
 
 /* العناوين: تباعد أسطر مريح بدون ما تفقد قوة الخط */
@@ -191,6 +233,28 @@ a {
 }
 
 /* نبضة خفيفة جداً — بتتحرك على transform/opacity بس */
+.logo-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.logo-shine::after {
+  content: "";
+  position: absolute;
+  inset: -35% -60%;
+  z-index: 20;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 42%, rgba(255, 255, 255, 0.75) 50%, transparent 58%);
+  transform: translateX(-75%) rotate(8deg);
+  animation: logo-shine-sweep 2.8s ease-in-out infinite;
+}
+
+@keyframes logo-shine-sweep {
+ 0%, 35% { transform: translateX(-75%) rotate(8deg); }
+ 75%, 100% { transform: translateX(75%) rotate(8deg); }
+}
+
 .btn-pulse {
   animation: pulse-soft 3.2s ease-in-out infinite;
   will-change: transform;
@@ -289,6 +353,7 @@ a {
   .mesh-bg,
   .btn-pulse,
   .btn-shine::after,
+  .logo-shine::after,
   .text-gradient-gold {
     animation: none !important;
   }
@@ -305,5 +370,15 @@ a {
 @media (max-width: 767px) {
   .mesh-bg {
     animation-duration: 40s;
+  }
+}
+
+/* الأقسام الطويلة لا تُرسم قبل الاقتراب منها: تحميل أسرع بدون تغيير المحتوى. */
+@media (min-width: 768px) {
+  #jobs,
+  #request-job,
+  #about {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 700px;
   }
 }

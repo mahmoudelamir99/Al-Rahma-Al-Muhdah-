@@ -150,7 +150,7 @@ export default function JobCard({ job, onApply }) {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.97 }}
         transition={{ type: "spring", stiffness: 400, damping: 22 }}
-        className={`group/apply relative mt-5 w-full overflow-hidden rounded-xl px-4 py-3 text-sm font-bold shadow-md transition-colors ${isFull ? "bg-slate-500 text-white hover:bg-slate-600" : "bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 text-white shadow-brand-900/20 hover:shadow-lg hover:shadow-brand-600/40"}`}
+        className={`group/apply relative mt-5 w-full max-w-md overflow-hidden rounded-xl px-6 py-3 text-sm font-bold shadow-md transition-colors ${isFull ? "bg-slate-500 text-white hover:bg-slate-600" : "bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 text-white shadow-brand-900/20 hover:shadow-lg hover:shadow-brand-600/40"}`}
       >
         <span className="relative z-10">
           {isFull ? "العدد اكتمل - سجل في تخصص آخر" : "التفاصيل والتقديم"}

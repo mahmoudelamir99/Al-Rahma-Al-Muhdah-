@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import {
   COMPANY,
@@ -9,6 +10,7 @@ import {
   WHATSAPP_LINK,
   ABOUT_TEXT,
 } from "@/lib/siteConfig";
+import ContactModal from "./ContactModal";
 
 /* أيقونة واتساب */
 function WhatsAppIcon({ className = "h-5 w-5" }) {
@@ -96,6 +98,7 @@ function scrollToSection(event, id, attempt = 0) {
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const [contactOpen, setContactOpen] = useState(false);
 
   return (
     <footer id="contact" className="relative scroll-mt-16 overflow-hidden bg-brand-950 text-slate-300">
@@ -118,7 +121,7 @@ export default function Footer() {
           {/* العمود 1: اللوجو + الوصف */}
           <div className="lg:col-span-5">
             {/* برواز زجاجي فاتح تحت اللوجو عشان ينطق على الخلفية الغامقة */}
-            <div className="inline-flex items-center rounded-2xl bg-white/95 px-4 py-2.5 backdrop-blur-sm">
+            <div className="inline-flex max-w-full items-center rounded-2xl bg-white/95 px-4 py-2.5 backdrop-blur-sm">
               {/*
                 نفس ملف الهيدر المصغّر (الفراغ مقصوص منه): الأبعاد الحقيقية
                 113×80 بدل 2783×1379 الغلط اللي كان بيخلّي العرض يتلغبط.
@@ -178,7 +181,7 @@ export default function Footer() {
                   href={CONTACT.mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="transition-colors hover:text-brand-300"
+                  className="break-words transition-colors hover:text-brand-300"
                 >
                   {CONTACT.addressLines[0]}
                   <br />
@@ -211,7 +214,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   dir="ltr"
-                  className="inline-block transition-colors hover:text-brand-300"
+                  className="inline-block break-all transition-colors hover:text-brand-300"
                 >
                   {CONTACT.whatsappNumber}
                 </a>
@@ -220,21 +223,58 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* شريط الخريطة */}
-        <a
-          href={CONTACT.mapUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group mt-10 flex items-center justify-between gap-3 rounded-2xl border-white/10 bg-white/5 px-4 py-3.5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-500/40 hover:bg-white/10 hover:shadow-lg hover:shadow-brand-500/10"
-        >
-          <span className="flex items-center gap-2.5 text-xs font-bold text-slate-200 sm:text-sm">
-            <span className="text-brand-300"><PinIcon className="h-5 w-5" /></span>
-            افتح الموقع على خريطة جوجل
-          </span>
-          <span className="text-xs font-bold text-brand-300 transition-transform group-hover:-translate-x-1">
-            ←
-          </span>
-        </a>
+        {/*
+          قسم الخريطة التفاعلية + زرار التواصل
+          - خريطة جوجل حقيقية (iframe) بعرض القسم كامل، المستخدم يعمل
+            زووم ويسحب ويشوف المكان بوضوح من غير ما يسيب الصفحة.
+          - تحتها/جنبها زرار فخم «تواصل معنا» بيفتح فورم المودال.
+        */}
+        <div className="mt-10 overflow-hidden rounded-2xl border-white/10 bg-white/5 backdrop-blur-sm">
+          <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="min-w-0">
+              <h3 className="text-sm font-extrabold text-white sm:text-base">زورنا في مقرنا</h3>
+              <p className="mt-1 text-xs leading-7 text-slate-400 sm:text-sm">
+                {CONTACT.addressLines[0]}
+                <br />
+                {CONTACT.addressLines[1]}
+              </p>
+            </div>
+
+            <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+              {/* زرار التواصل الفخم — بيفتح فورم المودال */}
+              <motion.button
+                type="button"
+                onClick={() => setContactOpen(true)}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 320, damping: 20 }}
+                className="btn-shine w-full rounded-xl bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-950/40 ring-1 ring-inset ring-white/20 transition-shadow hover:shadow-xl hover:shadow-brand-600/40 sm:w-auto"
+              >
+                <span className="relative z-10">تواصل معنا</span>
+              </motion.button>
+
+              <a
+                href={CONTACT.mapDirectionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex w-full items-center justify-center gap-2 rounded-xl border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-slate-200 transition-all duration-300 hover:border-brand-500/40 hover:bg-white/10 sm:w-auto"
+              >
+                <span className="text-brand-300"><PinIcon className="h-4 w-4" /></span>
+                الاتجاهات
+              </a>
+            </div>
+          </div>
+
+          {/* الخريطة التفاعلية بعرض القسم بالكامل */}
+          <iframe
+            title={`موقع ${COMPANY.name} على خريطة جوجل`}
+            src={CONTACT.mapEmbedUrl}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="h-64 w-full border-0 sm:h-80"
+            allowFullScreen
+          />
+        </div>
 
         {/* سطر الحقوق */}
         <div className="mt-8 flex-col items-center gap-2 border-t border-white/10 pt-6 text-center sm:flex-row sm:justify-between sm:text-right">
@@ -246,6 +286,11 @@ export default function Footer() {
           </p>
         </div>
       </div>
+
+      {/* فورم التواصل (Bottom Sheet على الموبايل / مودال على الديسكتوب) */}
+      <AnimatePresence>
+        {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />}
+      </AnimatePresence>
     </footer>
   );
 }

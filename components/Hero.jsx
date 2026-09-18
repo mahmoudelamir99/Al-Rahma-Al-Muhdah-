@@ -18,33 +18,52 @@ export default function Hero() {
         عبر aspect-video، فالفيلم يبان كامل من غير أي قص من فوق أو من تحت.
         في الموبايل الطولي 16:9 بيكون قصير شوية فبنخليه 4:3 لكن برضه عارض
         الفيلم كامل (object-contain) بدل ما نقصه.
+
+        مفيش poster ومفيش أي خلفية صورة — الموقع بيفتح على الفيديو مباشرة
+        زي ما العميل طلب، مفيش أي صورة تظهر قبل الفيديو.
       */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-950 sm:aspect-video">
-      <div className="absolute inset-x-4 top-5 z-10 text-center sm:top-8">
-        <h1 className="text-xl font-extrabold text-white drop-shadow-lg sm:text-3xl lg:text-4xl">
-          فرص عمل حقيقية في كبرى الشركات
-        </h1>
-      </div>
-
       {/*
         فيديو الخلفية.
-        الأربع خصائص دول مش تفاصيل: من غير muted + playsinline الموبايل
+        الخواص دي مش تفاصيل: من غير muted + playsinline الموبايل
         (خصوصاً iOS) هيمنع التشغيل التلقائي ويفتح مشغل ملء الشاشة.
-        poster بيمنع الشاشة الفاضية لحد ما الفيديو يجهز.
+        و preload="auto" عشان الفيديو يبدأ ينزّل مع تحميل الصفحة فوراً.
+        مفيش poster — أول فريم من الفيديو هو اللي بيبان على طول.
+
+        الترتيب مقصود: WebM (VP9) الأول لأنه أخف وأسرع، ولو المتصفح مش
+        داعمه (Safari القديم مثلاً) بينزل تلقائياً على MP4 كـ Fallback.
+        الفيديو من غير صوت أصلاً (اتشال وقت الضغط) فالـ Hero ما بيستهلكش
+        صوت ولا بيحتاج أي تحكم.
       */}
       <video
         autoPlay
-        loop
-        muted
         playsInline
+        muted
+        loop
         preload="auto"
-        poster="/hero-workers.jpg"
         aria-hidden="true"
         tabIndex={-1}
+        disablePictureInPicture
         className="pointer-events-none absolute inset-0 h-full w-full object-contain object-center"
       >
+        {/*
+          بنسيب الـ sources تطلع من السيرفر مباشرة (مش عن طريق حالة React
+          بعد الـ hydration) عشان الفيديو يبدأ ينزّل فور فتح الصفحة،
+          وأول فريم يبان من غير أي تأخير.
+        */}
+        <source src="/hero-video.webm" type="video/webm" />
         <source src="/hero-video.mp4" type="video/mp4" />
-        </video>
+      </video>
+
+      {/*
+        الدرك أوفرلاي (خفيف): طبقة متدرجة خفيفة فوق الفيديو بتدي لمسة فخامة
+        من غير ما تطمس تفاصيل الفيديو. العميل طلب تخفيفها عشان الفيديو ينوّر
+        ويبان أوضح، فخليتها تتراوح مابين 20% و35% بالكتير بدل 55-70%.
+      */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-brand-950/30 via-brand-950/20 to-brand-950/35"
+      />
 
       </div>
 
@@ -68,7 +87,7 @@ export default function Hero() {
             scale: 0.97,
             transition: { type: "spring", stiffness: 400, damping: 22 },
           }}
-          className="btn-shine btn-pulse group w-full max-w-xs rounded-xl bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 px-6 py-3.5 text-base font-bold text-white shadow-xl shadow-brand-950/30 ring-1 ring-inset ring-white/20 transition-shadow hover:shadow-2xl hover:shadow-brand-600/40 sm:w-auto sm:px-10 sm:text-lg"
+          className="btn-shine btn-pulse group w-full max-w-sm rounded-xl bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-brand-950/30 ring-1 ring-inset ring-white/20 transition-shadow hover:shadow-2xl hover:shadow-brand-600/40 sm:w-auto sm:px-8 sm:text-base"
         >
           <span className="relative z-10 flex items-center justify-center gap-2">
             شاهد الوظائف المتاحة

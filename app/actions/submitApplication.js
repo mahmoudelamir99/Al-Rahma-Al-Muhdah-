@@ -7,6 +7,7 @@ import { getSupabaseAdmin, APPLICATIONS_TABLE } from "@/lib/supabaseAdmin";
 const REQUIRED_TEXT = {
   full_name: "الاسم بالكامل",
   phone_number: "رقم التليفون",
+  national_id: "الرقم القومي",
   gender: "النوع",
   marital_status: "الحالة الاجتماعية",
   governorate: "المحافظة",
@@ -24,10 +25,23 @@ const OPTIONAL_TEXT = {
   previous_companies: "الشركات السابقة",
 };
 
+/*
+ * منع التكرار الذكي (بالـ Business Logic المتفق عليه مع العميل):
+ * نفس الشخص (نفس الرقم القومي) ممنوع يقدم على نفس الوظيفة أكتر من مرة،
+ * إلا لو طلبه القديم كان مرفوض (rejected) — دي الحالة الوحيدة اللي
+ * بتسمحله يقدّم تاني. أي حالة تانية (قيد المراجعة pending / تحت الفحص
+ * reviewed / محتاج بيانات needs_info / مقبول accepted / ملغي cancelled)
+ * بتعتبر طلب قائم وبيتمنع معاه التقديم المكرر.
+ */
+const ALLOWED_REAPPLY_STATUS = "rejected";
+const DUPLICATE_MESSAGE =
+  "لقد قمت بالتقديم على هذه الوظيفة مسبقاً وطلبك قيد المراجعة";
+
 // أقصى طول لكل حقل نصي (حماية من الإدخال العشوائي)
 const MAX_LENGTH = {
   full_name: 120,
   phone_number: 20,
+  national_id: 14,
   city: 80,
   specialization: 120,
   previous_companies: 300,
@@ -89,6 +103,10 @@ export async function submitApplication(rawPayload) {
     errors.phone_number = "رقم التليفون غير صحيح (مثال: 01012345678)";
   }
 
+  if (clean.national_id && !/^\d{14}$/.test(clean.national_id)) {
+    errors.national_id = "الرقم القومي لازم يكون 14 رقم";
+  }
+
   if (Object.keys(errors).length > 0) {
     return { ok: false, error: "في بيانات ناقصة أو غير صحيحة", fieldErrors: errors };
   }
@@ -103,10 +121,40 @@ export async function submitApplication(rawPayload) {
   }
   recentApplications.set(rateLimitKey, Date.now());
 
-  // 5) الحالة الافتراضية
+  // 5) منع التكرار: نفس الرقم القومي على نفس الوظيفة
+  //    بنفحص الأول قبل أي كتابة، والفحص على السيرفر بمفتاح الخدمة (مفيش وصول من المتصفح).
+  try {
+    const supabase = getSupabaseAdmin();
+
+    // بنجيب كل الطلبات السابقة بنفس الرقم القومي على نفس الوظيفة، ونفلتر
+    // في الكود: لو فيه أي طلب مش حالته rejected → ممنوع يقدّم تاني.
+    const { data: existing, error: checkError } = await supabase
+      .from(APPLICATIONS_TABLE)
+      .select("id, status")
+      .eq("national_id", clean.national_id)
+      .eq("selected_job", clean.selected_job);
+
+    if (checkError) {
+      console.error("[submitApplication] duplicate check failed:", checkError.message);
+      return { ok: false, error: "تعذّر التحقق من الطلبات السابقة، جرّب تاني بعد لحظات." };
+    }
+
+    const hasBlockingApplication = (existing ?? []).some(
+      (application) => application.status !== ALLOWED_REAPPLY_STATUS
+    );
+
+    if (hasBlockingApplication) {
+      return { ok: false, error: DUPLICATE_MESSAGE, duplicate: true };
+    }
+  } catch (err) {
+    console.error("[submitApplication] duplicate check unexpected:", err?.message || err);
+    return { ok: false, error: "حصل خطأ غير متوقع في السيرفر، جرّب تاني." };
+  }
+
+  // 6) الحالة الافتراضية
   clean.status = "pending";
 
-  // 6) الكتابة في Supabase من السيرفر (Service Role)
+  // 7) الكتابة في Supabase من السيرفر (Service Role)
   try {
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
