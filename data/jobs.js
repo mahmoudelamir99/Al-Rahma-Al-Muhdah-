@@ -1,0 +1,63 @@
+// بيانات تجريبية محلية — جاهزة للربط بـ Supabase في الجزء القادم.
+export const jobs = [
+  {
+    id: 1,
+    title: "فني كهرباء",
+    company: "ليوني",
+    companyLogo: "LEONI",
+    companyTone: "bg-red-600",
+    salary: "8,000 - 10,000 ج.م",
+    location: "القاهرة - مدينة نصر",
+    schedule: "8 ساعات / ورديات",
+    type: "دوام كامل",
+    required: 5,
+    applicants: 3,
+    description:
+      "مطلوب فني كهرباء لديه خبرة في التركيبات والصيانة للعمل بإحدى الشركات العالمية.",
+  },
+  {
+    id: 2,
+    title: "مهندس مدني",
+    company: "LG",
+    companyLogo: "LG",
+    companyTone: "bg-rose-600",
+    salary: "15,000 - 20,000 ج.م",
+    location: "الجيزة - 6 أكتوبر",
+    schedule: "9 ساعات / صباحي",
+    type: "دوام كامل",
+    required: 4,
+    applicants: 2,
+    description:
+      "مطلوب مهندس مدني للإشراف على مشروعات إنشائية كبرى مع فرصة تدريب وتطوير.",
+  },
+  {
+    id: 3,
+    title: "عامل إنتاج",
+    company: "ليوني",
+    companyLogo: "LEONI",
+    companyTone: "bg-red-600",
+    salary: "6,000 - 7,500 ج.م",
+    location: "العاشر من رمضان",
+    schedule: "12 ساعة / ورديات",
+    type: "دوام كامل",
+    required: 8,
+    applicants: 5,
+    description:
+      "مطلوب عمال إنتاج للعمل بمصنع بمنطقة العاشر من رمضان، يشترط الالتزام والجدية.",
+  },
+  {
+    id: 4,
+    title: "سائق نقل ثقيل",
+    company: "LG",
+    companyLogo: "LG",
+    companyTone: "bg-rose-600",
+    salary: "9,000 - 12,000 ج.م",
+    location: "الإسكندرية",
+    schedule: "10 ساعات / ورديات",
+    type: "دوام كامل",
+    required: 5,
+    applicants: 5,
+    description:
+      "مطلوب سائق نقل ثقيل يحمل رخصة أولى ودرجة، خبرة لا تقل عن سنتين.",
+  },
+];

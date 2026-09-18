@@ -1,0 +1,309 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+/*
+ * مسافة أمان لكل قسم عشان لما نتقل له بالـ hash (#jobs مثلاً)
+ * عنوانه ميتغطاش تحت الهيدر الثابت (sticky).
+ * دي احتياطي لطريقة الـ anchor الطبيعي، والـ JS بيحسب المسافة كمان.
+ */
+section[id],
+footer[id] {
+  scroll-margin-top: 5rem;
+}
+
+body {
+  background-color: #ffffff;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* مسافة أسطر مريحة بشكل عام لخط Cairo */
+  line-height: 1.9;
+  letter-spacing: 0.012em;
+  word-spacing: 0.05em;
+}
+
+/* العناوين: تباعد أسطر مريح بدون ما تفقد قوة الخط */
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.75;
+  letter-spacing: 0.005em;
+}
+
+/* النصوص الطويلة (الوصف) تتنفس أكتر لتسهيل القراءة */
+p {
+  line-height: 2;
+  letter-spacing: 0.015em;
+  word-spacing: 0.08em;
+}
+
+/* الأزرار واللينكات: تباعد بسيط بين الحروف */
+button,
+a {
+  letter-spacing: 0.01em;
+}
+
+/* تأثير زجاجي جاهز لإعادة الاستخدام */
+.glass {
+  background-color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.glass-card {
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* احتياط للمتصفحات اللي مش بتدعم backdrop-filter */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-card {
+    background-color: rgba(255, 255, 255, 0.94);
+  }
+}
+
+/* ==========================================================================
+   طبقة الفخامة (Premium UI)
+   كل الحركات هنا على transform / opacity / background-position بس، لأنهم
+   الحاجات الوحيدة اللي بتشتغل على GPU ومبتسببش إعادة تخطيط (reflow).
+   ========================================================================== */
+
+/* الزجاج الغامق بتاع الهيرو — فوق الفيديو عشان الكلام يبان */
+.glass-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(23, 37, 84, 0.86) 0%,
+    rgba(30, 58, 138, 0.7) 45%,
+    rgba(23, 37, 84, 0.9) 100%
+  );
+  backdrop-filter: blur(3px) saturate(130%);
+  -webkit-backdrop-filter: blur(3px) saturate(130%);
+}
+
+/* --------------------------------------------------------------------------
+   التدرجات النصية الفخمة
+   background-clip: text مع -webkit-text-fill-color عشان يشتغل على سفاري/iOS
+   -------------------------------------------------------------------------- */
+.text-gradient-gold {
+  background-image: linear-gradient(
+    100deg,
+    #ffffff 0%,
+    #fef3c7 22%,
+    #fcd34d 42%,
+    #ffffff 62%,
+    #fde68a 82%,
+    #ffffff 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-brand {
+  background-image: linear-gradient(100deg, #1e3a8a 0%, #2563eb 45%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   لمعة الأزرار (Shine) — شريط مايل بيعدّي على الزرار
+   بنحركه بـ translate3d عشان GPU، والـ overflow-hidden مش بيكسر الظل
+   لأن العنصر نفسه هو اللي عليه اللمعة.
+   -------------------------------------------------------------------------- */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  bottom: -60%;
+  left: 0;
+  width: 55%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.16) 35%,
+    rgba(255, 255, 255, 0.62) 50%,
+    rgba(255, 255, 255, 0.16) 65%,
+    transparent 100%
+  );
+  transform: translate3d(-260%, 0, 0) skewX(-22deg);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* اللمعة بتمشي تلقائياً ببطء عشان تخطف العين (idle) */
+@media (hover: hover) and (pointer: fine) {
+  .btn-shine::after {
+    animation: shine-idle 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .btn-shine:hover::after {
+    animation: none;
+    transform: translate3d(360%, 0, 0) skewX(-22deg);
+    transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* على الموبايل: لمعة واحدة عند الضغط بدل الأنيميشن المستمر (توفير بطارية/معالج) */
+@media (hover: none) {
+  .btn-shine:active::after {
+    animation: shine-sweep 0.6s ease-out;
+  }
+}
+
+@keyframes shine-idle {
+  0%,
+  62% {
+    transform: translate3d(-260%, 0, 0) skewX(-22deg);
+  }
+  100% {
+    transform: translate3d(360%, 0, 0) skewX(-22deg);
+  }
+}
+
+@keyframes shine-sweep {
+  0% {
+    transform: translate3d(-260%, 0, 0) skewX(-22deg);
+  }
+  100% {
+    transform: translate3d(360%, 0, 0) skewX(-22deg);
+  }
+}
+
+/* نبضة خفيفة جداً — بتتحرك على transform/opacity بس */
+.btn-pulse {
+  animation: pulse-soft 3.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, 0, 0) scale(1.018);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Mesh Gradient متحرك ببطء — خلفية قسم الوظايف
+   بنحرك الـ background-position بس (مفيش layout، مفيش blur متحرك).
+   الطبقات نفسها ثابتة ومخفية بـ blur مرة واحدة عند الرسم.
+   -------------------------------------------------------------------------- */
+.mesh-bg {
+  background-color: #dbeafe;
+  background-image:
+    radial-gradient(38% 44% at 14% 18%, rgba(37, 99, 235, 0.55) 0%, transparent 70%),
+    radial-gradient(42% 48% at 86% 12%, rgba(14, 165, 233, 0.45) 0%, transparent 70%),
+    radial-gradient(46% 52% at 78% 84%, rgba(29, 78, 216, 0.5) 0%, transparent 72%),
+    radial-gradient(40% 46% at 20% 88%, rgba(99, 102, 241, 0.42) 0%, transparent 70%),
+    radial-gradient(34% 40% at 50% 50%, rgba(125, 211, 252, 0.4) 0%, transparent 72%);
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+  animation: mesh-drift 28s ease-in-out infinite alternate;
+}
+
+@keyframes mesh-drift {
+  0% {
+    background-position:
+      0% 50%,
+      100% 0%,
+      50% 100%,
+      0% 100%,
+      100% 50%;
+  }
+  100% {
+    background-position:
+      100% 0%,
+      0% 100%,
+      100% 50%,
+      50% 0%,
+      0% 50%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   إضاءة حواف كارت الوظيفة (edge glow)
+   -------------------------------------------------------------------------- */
+.card-glow {
+  position: relative;
+}
+
+.card-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(96, 165, 250, 0.9) 0%,
+    rgba(37, 99, 235, 0.35) 35%,
+    rgba(125, 211, 252, 0.85) 70%,
+    rgba(37, 99, 235, 0.3) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-glow:hover::before {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   تقليل الحركة لمن يطلب ذلك (احترام إعدادات النظام + أداء)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .mesh-bg,
+  .btn-pulse,
+  .btn-shine::after,
+  .text-gradient-gold {
+    animation: none !important;
+  }
+
+  .glass,
+  .glass-card,
+  .glass-overlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* على الموبايل نقلّل شغل الـ blur والتدرجات المتحركة */
+@media (max-width: 767px) {
+  .mesh-bg {
+    animation-duration: 40s;
+  }
+}
