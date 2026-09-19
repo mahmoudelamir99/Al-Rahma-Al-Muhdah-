@@ -104,7 +104,7 @@ export default function ContactModal({ onClose }) {
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] font-bold text-brand-600">فريق الرحمة المهداة</p>
+              <p className="text-[11px] font-bold text-brand-600">فريق الرحمة المهداة</p>
               <h3 className="text-lg font-extrabold text-slate-900 sm:text-2xl">تواصل معنا</h3>
             </div>
             <button
@@ -206,7 +206,7 @@ export default function ContactModal({ onClose }) {
                 <span className="relative z-10">{isSending ? "جارٍ الإرسال..." : "إرسال الرسالة"}</span>
               </button>
 
-              <p className="text-center text-[11px] text-slate-400">
+              <p className="text-center text-xs font-semibold text-slate-500">
                 أو كلّمنا مباشرة على واتساب: {CONTACT.whatsappNumber}
               </p>
             </form>

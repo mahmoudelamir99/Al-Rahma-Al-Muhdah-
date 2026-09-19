@@ -158,7 +158,7 @@ export default function Header() {
               key={link.id}
               href={`#${link.id}`}
               onClick={(event) => handleNav(event, link.id)}
-              className="rounded-lg px-3 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
+              className="rounded-lg px-3 py-2 text-sm font-bold text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-700"
             >
               {link.label}
             </a>
@@ -198,7 +198,7 @@ export default function Header() {
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? "إغلاق القائمة" : "فتح القائمة"}
           aria-expanded={menuOpen}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/70 text-slate-600 ring-1 ring-slate-200 transition hover:bg-white md:hidden"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/70 text-slate-700 ring-1 ring-slate-200 transition hover:bg-white md:hidden"
         >
           <MenuIcon open={menuOpen} />
         </button>
@@ -221,7 +221,7 @@ export default function Header() {
                   key={link.id}
                   href={`#${link.id}`}
                   onClick={(event) => handleNav(event, link.id)}
-                  className="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
+                  className="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-700"
                 >
                   {link.label}
                 </a>

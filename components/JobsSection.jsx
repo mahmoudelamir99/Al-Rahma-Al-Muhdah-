@@ -53,7 +53,7 @@ export default function JobsSection() {
           <h2 className="text-gradient-brand text-xl font-extrabold sm:text-3xl">
             الوظائف المتاحة
           </h2>
-          <p className="mt-3 text-sm text-slate-500 sm:text-base">
+          <p className="mt-3 text-sm font-semibold text-slate-600 sm:text-base">
             فرص عمل مجانية تماماً بالشركات العالمية الموجودة في مصر
           </p>
         </motion.div>

@@ -59,7 +59,7 @@ function ColumnTitle({ children }) {
 /* سطر بيانات بأيقونة */
 function InfoRow({ icon, children }) {
   return (
-    <li className="flex items-start gap-2.5 text-xs leading-7 text-slate-300 sm:text-sm">
+    <li className="flex items-start gap-2.5 text-xs font-semibold leading-7 text-slate-300 sm:text-sm">
       <span className="mt-1 shrink-0 text-brand-300">{icon}</span>
       <span className="min-w-0">{children}</span>
     </li>
@@ -133,7 +133,7 @@ export default function Footer() {
               />
             </div>
 
-            <p className="mt-4 max-w-md text-xs leading-8 text-slate-400 sm:text-sm">
+            <p className="mt-4 max-w-md text-xs font-semibold leading-8 text-slate-300 sm:text-sm">
               {ABOUT_TEXT}
             </p>
 
@@ -160,7 +160,7 @@ export default function Footer() {
                   <a
                     href={`#${link.id}`}
                     onClick={(event) => scrollToSection(event, link.id)}
-                    className="text-xs text-slate-300 transition-colors hover:text-brand-300 sm:text-sm"
+                    className="text-xs font-semibold text-slate-200 transition-colors hover:text-brand-300 sm:text-sm"
                   >
                     {link.label}
                   </a>
@@ -231,7 +231,7 @@ export default function Footer() {
           <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="min-w-0">
               <h3 className="text-sm font-extrabold text-white sm:text-base">زورنا في مقرنا</h3>
-              <p className="mt-1 text-xs leading-7 text-slate-400 sm:text-sm">
+              <p className="mt-1 text-xs font-semibold leading-7 text-slate-300 sm:text-sm">
                 {CONTACT.addressLines[0]}
                 <br />
                 {CONTACT.addressLines[1]}
@@ -274,7 +274,7 @@ export default function Footer() {
           من غير ما يبقى فيه وعد صريح بالمجانية مكتوب في الموقع.
         */}
         <div className="mt-8 border-t border-white/10 pt-6 text-center">
-          <p className="text-[11px] text-slate-400 sm:text-xs">
+          <p className="text-[11px] font-semibold text-slate-400 sm:text-xs">
             © {year} {COMPANY.name}. جميع الحقوق محفوظة.
           </p>
         </div>

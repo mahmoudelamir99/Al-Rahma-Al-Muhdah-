@@ -95,13 +95,23 @@ export default function RootLayout({ children }) {
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        {/*
+          ملاحظة مهمة: شلنا الوزن 400 (Regular) خلاص.
+          خط Cairo العادي بيطلع رفيع وناعم على الشاشات، خصوصاً مع الـ
+          antialiasing، وده بيجهد العين في القراءة الطويلة. فبقينا نحمّل
+          أوزان تقيلة بس (600 → 800) وكل النصوص العادية بقت على 600.
+        */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap"
           rel="stylesheet"
         />
         <style>{`:root{--font-cairo:'Cairo',system-ui,sans-serif}`}</style>
       </head>
-      <body className="font-sans antialiased">{children}</body>
+      {/*
+        ملاحظة: شلنا كلاس antialiased عن قصد — هو اللي كان بيخلي حروف Cairo
+        رفيعة وباهتة. الوضوح دلوقتي متضبط من globals.css (font-smoothing: auto).
+      */}
+      <body className="font-sans">{children}</body>
     </html>
   );
 }

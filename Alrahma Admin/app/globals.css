@@ -1,0 +1,287 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   أساسيات اللوحة — نسخة طبق الأصل من إعدادات الموقع الأساسي
+   (نفس الخط ونفس وضوحه ونفس سرعة الاستجابة)
+   ========================================================================== */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f1f1ef;
+  color: #1f2429;
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* نفس إعدادات الموقع الأساسي بالحرف */
+  text-rendering: optimizeLegibility;
+  line-height: 1.9;
+  letter-spacing: 0.012em;
+  word-spacing: 0.05em;
+}
+
+/* نفس قواعد العناوين والنصوص في الموقع الأساسي */
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.75;
+  letter-spacing: 0.005em;
+}
+
+p {
+  line-height: 2;
+  letter-spacing: 0.015em;
+  word-spacing: 0.08em;
+}
+
+button,
+a {
+  letter-spacing: 0.01em;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+span,
+a,
+li,
+label,
+button {
+  overflow-wrap: break-word;
+}
+
+img,
+video,
+svg,
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+/* شريط تمرير رفيع يناسب الوضع المضيء */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e8e8e5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c3c3bd;
+  border-radius: 999px;
+  border: 2px solid #e8e8e5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a1;
+}
+
+/* ==========================================================================
+   بطاقات صلبة (Solid) — بدون أي backdrop-blur
+   السبب: الـ blur بيكلف وقت رسم على GPU في كل إطار، وبيكسّر سرعة الكليك.
+   نفس الشكل الزجاجي محفوظ بالتدرج والحدود والظل الناعم بدون أي تكلفة أداء.
+   ========================================================================== */
+.glass-light,
+.glass-panel {
+  background-color: #ffffff;
+  border: 1px solid #e8e8e5;
+  box-shadow: 0 1px 2px rgba(20, 24, 28, 0.03), 0 8px 20px -16px rgba(20, 24, 28, 0.1);
+}
+
+/* ==========================================================================
+   هالة الخلفية المضيئة (Aura) — ألوان الهوية بشفافية خفيفة جداً
+   ========================================================================== */
+/* بدون filter: blur — التدرجات شفافة أصلاً فمفيش داعي لعملية الرسم الثقيلة */
+.aura-layer {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(32% 36% at 16% 18%, rgba(103, 114, 123, 0.05) 0%, transparent 70%),
+    radial-gradient(28% 32% at 84% 14%, rgba(169, 116, 88, 0.06) 0%, transparent 72%),
+    radial-gradient(36% 40% at 74% 86%, rgba(77, 86, 96, 0.05) 0%, transparent 74%),
+    radial-gradient(26% 30% at 20% 88%, rgba(169, 116, 88, 0.04) 0%, transparent 72%);
+}
+
+/* شبكة رفيعة — mask أسرع من blur بكثير (مفيش حساب ضبابية) */
+.grid-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(77, 86, 96, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 86, 96, 0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(72% 62% at 50% 38%, #000 0%, transparent 100%);
+  -webkit-mask-image: radial-gradient(72% 62% at 50% 38%, #000 0%, transparent 100%);
+}
+
+/* ==========================================================================
+   تدرجات النصوص
+   ========================================================================== */
+.text-gradient-gold {
+  background-image: linear-gradient(100deg, #8d5c45 0%, #bd8f76 42%, #a97458 68%, #704838 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-brand {
+  background-image: linear-gradient(100deg, #24354b 0%, #3f5a78 48%, #5c7388 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* خطوط فاصلة رفيعة */
+.divider-gold {
+  height: 1px;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(169, 116, 88, 0.35) 50%,
+    transparent 100%
+  );
+}
+
+.divider-soft {
+  height: 1px;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(77, 86, 96, 0.11) 50%,
+    transparent 100%
+  );
+}
+
+/* ==========================================================================
+   لمعة الزرار (Shine) — على transform بس
+   ========================================================================== */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  bottom: -60%;
+  left: 0;
+  width: 55%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 38%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.2) 62%,
+    transparent 100%
+  );
+  transform: translate3d(-260%, 0, 0) skewX(-22deg);
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-shine::after {
+    animation: shine-idle 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .btn-shine:hover::after {
+    animation: none;
+    transform: translate3d(360%, 0, 0) skewX(-22deg);
+    transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@media (hover: none) {
+  .btn-shine:active::after {
+    animation: shine-sweep 0.6s ease-out;
+  }
+}
+
+@keyframes shine-idle {
+  0%,
+  62% {
+    transform: translate3d(-260%, 0, 0) skewX(-22deg);
+  }
+  100% {
+    transform: translate3d(360%, 0, 0) skewX(-22deg);
+  }
+}
+
+@keyframes shine-sweep {
+  0% {
+    transform: translate3d(-260%, 0, 0) skewX(-22deg);
+  }
+  100% {
+    transform: translate3d(360%, 0, 0) skewX(-22deg);
+  }
+}
+
+/* ==========================================================================
+   حقول الإدخال — مضيئة وناعمة
+   ========================================================================== */
+.field-light {
+  background-color: #ffffff;
+  border: 1px solid #d0d0cb;
+  color: #1f2429;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field-light::placeholder {
+  color: #9d9d97;
+}
+
+.field-light:hover {
+  border-color: #b9c0c7;
+}
+
+.field-light:focus {
+  outline: none;
+  border-color: #a97458;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(169, 116, 88, 0.12);
+}
+
+/* إصلاح خلفية الإكمال التلقائي في كروم */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #1f2429;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  box-shadow: 0 0 0 1000px #ffffff inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ==========================================================================
+   احترام تقليل الحركة + تقليل شغل البلور على الموبايل
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .btn-shine::after,
+  .aura-layer {
+    animation: none !important;
+  }
+}

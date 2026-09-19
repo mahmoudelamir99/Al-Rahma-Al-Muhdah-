@@ -121,15 +121,15 @@ export default function JobCard({ job, onApply }) {
           {job.companyLogo}
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-slate-500">{job.company}</p>
+          <p className="text-xs font-bold text-slate-600">{job.company}</p>
           <h3 className="text-base font-extrabold leading-relaxed text-brand-900 sm:text-lg">{job.title}</h3>
         </div>
       </div>
 
-      <p className="mt-4 text-sm leading-7 text-slate-600">{job.description}</p>
+      <p className="mt-4 text-sm font-semibold leading-7 text-slate-700">{job.description}</p>
 
       <div className="mt-5 grid-cols-1 gap-2.5 text-xs text-slate-700 sm:grid-cols-3">
-        <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/50 px-2.5 py-2 font-semibold"><Icon name="money" />{job.salary}</span>
+        <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/50 px-2.5 py-2 font-bold"><Icon name="money" />{job.salary}</span>
         <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/50 px-2.5 py-2"><Icon name="location" />{job.location}</span>
         <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/50 px-2.5 py-2"><Icon name="clock" />{job.schedule}</span>
       </div>

@@ -87,7 +87,7 @@ export default function Hero() {
             scale: 0.97,
             transition: { type: "spring", stiffness: 400, damping: 22 },
           }}
-          className="btn-shine btn-pulse group w-full max-w-sm rounded-xl bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-brand-950/30 ring-1 ring-inset ring-white/20 transition-shadow hover:shadow-2xl hover:shadow-brand-600/40 sm:w-auto sm:px-8 sm:text-base"
+          className="btn-shine btn-pulse group w-full max-w-sm rounded-xl bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 px-6 py-3 text-sm font-extrabold text-white shadow-xl shadow-brand-950/30 ring-1 ring-inset ring-white/20 transition-shadow hover:shadow-2xl hover:shadow-brand-600/40 sm:w-auto sm:px-8 sm:text-base"
         >
           <span className="relative z-10 flex items-center justify-center gap-2">
             شاهد الوظائف المتاحة
