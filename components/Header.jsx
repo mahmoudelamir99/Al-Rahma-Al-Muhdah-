@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { NAV_LINKS, WHATSAPP_LINK, COMPANY } from "@/lib/siteConfig";
 import TrackApplicationModal from "./TrackApplicationModal";
+import ContactModal from "./ContactModal";
 
 /**
  * Smooth Scroll لأي قسم في الصفحة.
@@ -81,11 +82,26 @@ function MenuIcon({ open }) {
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [trackOpen, setTrackOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+
+  /*
+   * لينك "تواصل معنا" في الهيدر مش بيعمل Scroll لتحت خالص — بيفتح
+   * فورم التواصل (Modal) مباشرةً. ده بيوفّر على المستخدم خطوة، وبيمنع
+   * أي التباس إنه لازم ينزل لقسم التواصل. باقي اللينكات بتفضل بتعمل
+   * Scroll عادي زي ما هي.
+   */
+  const CONTACT_LINK_ID = "contact";
 
   const handleNav = (event, id) => {
     event.preventDefault();
     // نقفل القائمة الأول، والـ scroll بيستنى لحد ما القفل يخلص
     setMenuOpen(false);
+
+    if (id === CONTACT_LINK_ID) {
+      setContactOpen(true);
+      return;
+    }
+
     scrollToSection(id);
   };
 
@@ -223,6 +239,10 @@ export default function Header() {
       </AnimatePresence>
       <AnimatePresence>
         {trackOpen && <TrackApplicationModal onClose={() => setTrackOpen(false)} />}
+      </AnimatePresence>
+      {/* فورم التواصل — Bottom Sheet على الموبايل / مودال على الديسكتوب */}
+      <AnimatePresence>
+        {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />}
       </AnimatePresence>
     </motion.header>
   );

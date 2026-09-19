@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import {
   COMPANY,
@@ -10,7 +9,6 @@ import {
   WHATSAPP_LINK,
   ABOUT_TEXT,
 } from "@/lib/siteConfig";
-import ContactModal from "./ContactModal";
 
 /* أيقونة واتساب */
 function WhatsAppIcon({ className = "h-5 w-5" }) {
@@ -98,7 +96,6 @@ function scrollToSection(event, id, attempt = 0) {
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const [contactOpen, setContactOpen] = useState(false);
 
   return (
     <footer id="contact" className="relative scroll-mt-16 overflow-hidden bg-brand-950 text-slate-300">
@@ -224,10 +221,11 @@ export default function Footer() {
         </div>
 
         {/*
-          قسم الخريطة التفاعلية + زرار التواصل
+          قسم الخريطة التفاعلية
           - خريطة جوجل حقيقية (iframe) بعرض القسم كامل، المستخدم يعمل
             زووم ويسحب ويشوف المكان بوضوح من غير ما يسيب الصفحة.
-          - تحتها/جنبها زرار فخم «تواصل معنا» بيفتح فورم المودال.
+          - زرار فورم التواصل اتشال من هنا (مكرر)، بقى زرار الهيدر هو
+            اللي بيفتح المودال مباشرةً.
         */}
         <div className="mt-10 overflow-hidden rounded-2xl border-white/10 bg-white/5 backdrop-blur-sm">
           <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
@@ -241,18 +239,11 @@ export default function Footer() {
             </div>
 
             <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-              {/* زرار التواصل الفخم — بيفتح فورم المودال */}
-              <motion.button
-                type="button"
-                onClick={() => setContactOpen(true)}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 320, damping: 20 }}
-                className="btn-shine w-full rounded-xl bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-brand-950/40 ring-1 ring-inset ring-white/20 transition-shadow hover:shadow-xl hover:shadow-brand-600/40 sm:w-auto"
-              >
-                <span className="relative z-10">تواصل معنا</span>
-              </motion.button>
-
+              {/*
+                مفيش زرار "تواصل معنا" هنا — العميل اعتمد إن زرار الهيدر فوق
+                هو اللي بيفتح فورم التواصل مباشرةً، فشلنا الزرار المكرر ده
+                خلاص عشان ما يبقاش فيه مصدرين لنفس المهمة.
+              */}
               <a
                 href={CONTACT.mapDirectionsUrl}
                 target="_blank"
@@ -276,21 +267,18 @@ export default function Footer() {
           />
         </div>
 
-        {/* سطر الحقوق */}
-        <div className="mt-8 flex-col items-center gap-2 border-t border-white/10 pt-6 text-center sm:flex-row sm:justify-between sm:text-right">
+        {/*
+          سطر الحقوق.
+          شلنا جملة "فرص عمل حقيقية مجانًا بالكامل — بدون أي رسوم" بطلب
+          العميل، عشان يبقى قادر يضيف رسوم على التقديمات مستقبلًا لو حب،
+          من غير ما يبقى فيه وعد صريح بالمجانية مكتوب في الموقع.
+        */}
+        <div className="mt-8 border-t border-white/10 pt-6 text-center">
           <p className="text-[11px] text-slate-400 sm:text-xs">
             © {year} {COMPANY.name}. جميع الحقوق محفوظة.
           </p>
-          <p className="text-[11px] text-slate-500 sm:text-xs">
-            فرص عمل حقيقية مجاناً بالكامل — بدون أي رسوم على الباحثين عن عمل.
-          </p>
         </div>
       </div>
-
-      {/* فورم التواصل (Bottom Sheet على الموبايل / مودال على الديسكتوب) */}
-      <AnimatePresence>
-        {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />}
-      </AnimatePresence>
     </footer>
   );
 }
