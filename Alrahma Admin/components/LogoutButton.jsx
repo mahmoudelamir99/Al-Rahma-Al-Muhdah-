@@ -39,7 +39,7 @@ export default function LogoutButton({ variant = "full" }) {
         disabled={loading}
         aria-label="تسجيل الخروج"
         title="تسجيل الخروج"
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/80 text-rose-500/85 transition-colors duration-200 hover:bg-rose-50 hover:text-rose-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/40 disabled:opacity-60"
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-surface-300 text-rose-600 transition-colors duration-150 hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/40 disabled:opacity-60"
       >
         <IconLogout className="h-[18px] w-[18px]" />
       </button>
@@ -51,7 +51,7 @@ export default function LogoutButton({ variant = "full" }) {
       type="button"
       onClick={handleLogout}
       disabled={loading}
-      className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white/70 px-4 py-3 text-[13.5px] font-bold text-rose-500/90 transition-colors duration-200 hover:bg-rose-50 hover:text-rose-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/40 disabled:opacity-60"
+      className="flex w-full items-center justify-center gap-2 rounded-2xl bg-surface-300/70 px-4 py-3 text-[14px] font-bold text-rose-600 transition-colors duration-150 hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/40 disabled:opacity-60"
     >
       <IconLogout className="h-[18px] w-[18px]" />
       {loading ? "جاري الخروج…" : "تسجيل الخروج"}

@@ -114,7 +114,8 @@ const FEATURES = [
   },
 ];
 
-export default function About() {
+export default function About({ settings = {} }) {
+  const aboutText = settings.about_text || ABOUT_TEXT;
   return (
     <section
       id="about"
@@ -162,7 +163,7 @@ export default function About() {
 
           {/* نص التعريف — عرض كامل، مركز، ومساحة مريحة للكلام */}
           <div className="mx-auto max-w-3xl px-5 py-7 text-center sm:px-10 sm:py-9">
-            <span className="inline-flex items-center gap-2 rounded-full border-brand-200/70 bg-brand-50/80 px-3 py-1 text-[11px] font-bold text-brand-700 sm:text-xs">
+            <span className="inline-flex items-center gap-2 rounded-full border-brand-200/70 bg-brand-50/80 px-3 py-1 text-[10px] font-bold text-brand-700 sm:text-xs">
               من نحن
             </span>
 
@@ -170,8 +171,8 @@ export default function About() {
               {COMPANY.name}
             </h2>
 
-            <p className="mt-4 text-sm font-semibold leading-9 text-slate-700 sm:text-base sm:leading-10">
-              {ABOUT_TEXT}
+            <p className="mt-4 text-sm leading-9 text-slate-600 sm:text-base sm:leading-10">
+              {aboutText}
             </p>
           </div>
 
@@ -197,7 +198,7 @@ export default function About() {
                 </span>
                 <span className="min-w-0">
                   <p className="text-sm font-extrabold text-brand-900">{item.title}</p>
-                  <p className="mt-1 text-xs font-semibold leading-6 text-slate-600 [text-wrap:pretty]">{item.desc}</p>
+                  <p className="mt-1 text-xs leading-6 text-slate-500 [text-wrap:pretty]">{item.desc}</p>
                 </span>
               </motion.div>
             ))}

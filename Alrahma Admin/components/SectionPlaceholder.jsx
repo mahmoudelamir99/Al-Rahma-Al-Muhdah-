@@ -12,7 +12,7 @@ export default function SectionPlaceholder({ title, description, Icon, points = 
           </span>
           <div className="min-w-0">
             <h1 className="text-lg font-extrabold text-brand-900 sm:text-xl">{title}</h1>
-            <p className="mt-2 max-w-[42rem] text-[13.5px] leading-relaxed text-brand-900/60">
+            <p className="mt-2 max-w-[42rem] text-[14px] font-semibold leading-relaxed text-brand-900/75">
               {description}
             </p>
           </div>
@@ -25,9 +25,9 @@ export default function SectionPlaceholder({ title, description, Icon, points = 
               {points.map((point) => (
                 <li
                   key={point}
-                  className="flex items-start gap-2.5 rounded-2xl bg-white/70 px-3.5 py-3 text-[13px] text-brand-900/70"
+                  className="flex items-start gap-2.5 rounded-2xl bg-surface-300/70 px-3.5 py-3 text-[13.5px] font-semibold text-brand-900/85"
                 >
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold-400" />
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-copper-500" />
                   {point}
                 </li>
               ))}

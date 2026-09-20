@@ -1,0 +1,16 @@
+
+> alrahma-recruitment@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.25
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.3:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 11.9s
+ ○ Compiling / ...
+ ✓ Compiled / in 5.2s (1597 modules)
+ GET / 200 in 8552ms
+ GET / 200 in 1932ms
+ GET / 200 in 4912ms

@@ -31,11 +31,11 @@ function StatusBadge({ status }) {
   const available = status === "available";
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-bold ${available ? "bg-emerald-50 text-emerald-700" : "bg-surface-300 text-brand-900/55"
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12.5px] font-bold ${available ? "bg-emerald-50 text-emerald-800" : "bg-surface-300 text-brand-900/75"
         }`}
     >
       <span
-        className={`h-1.5 w-1.5 rounded-full ${available ? "bg-emerald-500" : "bg-brand-900/35"}`}
+        className={`h-1.5 w-1.5 rounded-full ${available ? "bg-emerald-500" : "bg-brand-900/55"}`}
       />
       {available ? "متاح" : "مغلق"}
     </span>
@@ -104,12 +104,12 @@ export default function JobsTable({ jobs }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="ابحث باسم الوظيفة أو الشركة…"
-            className="w-full rounded-2xl border-surface-500 bg-white px-3.5 py-2.5 text-[13.5px] text-brand-900 transition-colors duration-150 focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-500/10 sm:max-w-xs"
+            className="field-light w-full rounded-2xl px-3.5 py-2.5 text-[14px] sm:max-w-xs"
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full rounded-2xl border-surface-500 bg-white px-3.5 py-2.5 text-[13.5px] font-semibold text-brand-900 transition-colors duration-150 focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-500/10 sm:w-40"
+            className="field-light w-full rounded-2xl px-3.5 py-2.5 text-[14px] sm:w-40"
           >
             <option value="all">كل الحالات</option>
             <option value="available">متاح</option>
@@ -120,10 +120,10 @@ export default function JobsTable({ jobs }) {
         <button
           type="button"
           onClick={openAdd}
-          className="flex items-center justify-center gap-2 rounded-2xl bg-brand-600 px-5 py-2.5 text-[13.5px] font-bold text-white transition-colors duration-150 hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/50"
+          className="btn-shine flex items-center justify-center gap-2 rounded-2xl bg-brand-700 px-5 py-2.5 text-[14px] font-bold text-white transition-colors duration-150 hover:bg-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/50"
         >
-          <span className="text-[17px] leading-none">+</span>
-          إضافة وظيفة
+          <span className="relative z-10 text-[17px] leading-none">+</span>
+          <span className="relative z-10">إضافة وظيفة</span>
         </button>
       </div>
 
@@ -132,26 +132,26 @@ export default function JobsTable({ jobs }) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[54rem] border-collapse text-right">
             <thead>
-              <tr className="border-b border-surface-400 bg-white/60">
-                <th className="px-4 py-3 text-[11.5px] font-bold uppercase tracking-wider text-brand-900/50">
+              <tr className="border-b border-surface-400 bg-surface-300/60">
+                <th className="px-4 py-3 text-[12px] font-bold uppercase tracking-wider text-brand-900/75">
                   الوظيفة
                 </th>
-                <th className="px-4 py-3 text-[11.5px] font-bold uppercase tracking-wider text-brand-900/50">
+                <th className="px-4 py-3 text-[12px] font-bold uppercase tracking-wider text-brand-900/75">
                   الراتب
                 </th>
-                <th className="px-4 py-3 text-center text-[11.5px] font-bold uppercase tracking-wider text-brand-900/50">
+                <th className="px-4 py-3 text-center text-[12px] font-bold uppercase tracking-wider text-brand-900/75">
                   المطلوب
                 </th>
-                <th className="px-4 py-3 text-center text-[11.5px] font-bold uppercase tracking-wider text-brand-900/50">
+                <th className="px-4 py-3 text-center text-[12px] font-bold uppercase tracking-wider text-brand-900/75">
                   المتقدمون
                 </th>
-                <th className="px-4 py-3 text-center text-[11.5px] font-bold uppercase tracking-wider text-brand-900/50">
+                <th className="px-4 py-3 text-center text-[12px] font-bold uppercase tracking-wider text-brand-900/75">
                   الحالة
                 </th>
-                <th className="px-4 py-3 text-[11.5px] font-bold uppercase tracking-wider text-brand-900/50">
+                <th className="px-4 py-3 text-[12px] font-bold uppercase tracking-wider text-brand-900/75">
                   تاريخ الإضافة
                 </th>
-                <th className="px-4 py-3 text-center text-[11.5px] font-bold uppercase tracking-wider text-brand-900/50">
+                <th className="px-4 py-3 text-center text-[12px] font-bold uppercase tracking-wider text-brand-900/75">
                   إجراءات
                 </th>
               </tr>
@@ -160,13 +160,13 @@ export default function JobsTable({ jobs }) {
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-4 py-14 text-center">
-                    <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white text-brand-900/35">
+                    <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-surface-300 text-brand-900/60">
                       <IconBriefcase className="h-5 w-5" />
                     </span>
-                    <p className="mt-3 text-[14px] font-bold text-brand-900/70">
+                    <p className="mt-3 text-[14.5px] font-bold text-brand-900/85">
                       {jobs.length === 0 ? "مفيش وظائف مضافة بعد" : "مفيش نتائج مطابقة"}
                     </p>
-                    <p className="mt-1 text-[12.5px] text-brand-900/45">
+                    <p className="mt-1 text-[13px] font-semibold text-brand-900/65">
                       {jobs.length === 0
                         ? "ابدأ بإضافة أول وظيفة من زرار «إضافة وظيفة»."
                         : "جرّب تغيّر كلمة البحث أو فلتر الحالة."}
@@ -190,10 +190,10 @@ export default function JobsTable({ jobs }) {
                         {(job.company_logo || job.company || job.title || "؟").slice(0, 3)}
                       </span>
                       <div className="min-w-0">
-                        <p className="truncate text-[13.5px] font-bold text-brand-900">
+                        <p className="truncate text-[14px] font-bold text-brand-900">
                           {job.title}
                         </p>
-                        <p className="truncate text-[11.5px] text-brand-900/50">
+                        <p className="truncate text-[12.5px] font-semibold text-brand-900/65">
                           {job.company || "—"}
                           {job.location ? ` · ${job.location}` : ""}
                         </p>
@@ -202,7 +202,7 @@ export default function JobsTable({ jobs }) {
                   </td>
 
                   {/* الراتب */}
-                  <td className="whitespace-nowrap px-4 py-3.5 text-[13px] text-brand-900/75">
+                  <td className="whitespace-nowrap px-4 py-3.5 text-[13.5px] font-semibold text-brand-900">
                     {formatSalary(job.salary_from, job.salary_to)}
                   </td>
 
@@ -213,7 +213,7 @@ export default function JobsTable({ jobs }) {
 
                   {/* المتقدمون */}
                   <td className="px-4 py-3.5 text-center">
-                    <span className="inline-flex min-w-9 justify-center rounded-full bg-brand-50 px-2.5 py-1 text-[12.5px] font-bold text-brand-700">
+                    <span className="inline-flex min-w-9 justify-center rounded-full bg-brand-100 px-2.5 py-1 text-[13px] font-bold text-brand-800">
                       {job.applicants ?? 0}
                     </span>
                   </td>
@@ -224,7 +224,7 @@ export default function JobsTable({ jobs }) {
                   </td>
 
                   {/* التاريخ */}
-                  <td className="whitespace-nowrap px-4 py-3.5 text-[12.5px] text-brand-900/60">
+                  <td className="whitespace-nowrap px-4 py-3.5 text-[13px] font-semibold text-brand-900/80">
                     {formatDate(job.created_at)}
                   </td>
 
@@ -234,14 +234,14 @@ export default function JobsTable({ jobs }) {
                       <button
                         type="button"
                         onClick={() => openEdit(job)}
-                        className="rounded-xl bg-white px-3 py-1.5 text-[12.5px] font-bold text-brand-700 transition-colors duration-150 hover:bg-brand-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/40"
+                        className="rounded-xl bg-surface-300 px-3 py-1.5 text-[13px] font-bold text-brand-800 transition-colors duration-150 hover:bg-brand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/40"
                       >
                         تعديل
                       </button>
                       <button
                         type="button"
                         onClick={() => setConfirmJob(job)}
-                        className="rounded-xl bg-white px-3 py-1.5 text-[12.5px] font-bold text-rose-500 transition-colors duration-150 hover:bg-rose-50 hover:text-rose-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/40"
+                        className="rounded-xl bg-surface-300 px-3 py-1.5 text-[13px] font-bold text-rose-600 transition-colors duration-150 hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/40"
                       >
                         حذف
                       </button>
@@ -254,11 +254,11 @@ export default function JobsTable({ jobs }) {
         </div>
 
         {/* تذييل الجدول */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-surface-400 bg-white/50 px-4 py-3">
-          <p className="text-[12px] text-brand-900/50">
-            إجمالي الوظائف: <span className="font-bold text-brand-900/75">{jobs.length}</span>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-surface-400 bg-surface-300/50 px-4 py-3">
+          <p className="text-[13px] font-semibold text-brand-900/70">
+            إجمالي الوظائف: <span className="font-bold text-brand-900">{jobs.length}</span>
             {" · "}
-            الظاهر: <span className="font-bold text-brand-900/75">{filtered.length}</span>
+            الظاهر: <span className="font-bold text-brand-900">{filtered.length}</span>
           </p>
         </div>
       </div>
@@ -282,10 +282,10 @@ export default function JobsTable({ jobs }) {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-3xl border-white/80 bg-surface-100 p-6 shadow-lift"
+            className="relative z-10 w-full max-w-md rounded-3xl border-surface-400 bg-surface-100 p-6 shadow-lift"
           >
-            <h3 className="text-[16px] font-extrabold text-brand-900">تأكيد الحذف</h3>
-            <p className="mt-2 text-[13.5px] leading-relaxed text-brand-900/60">
+            <h3 className="text-[16.5px] font-extrabold text-brand-900">تأكيد الحذف</h3>
+            <p className="mt-2 text-[14px] font-semibold leading-relaxed text-brand-900/75">
               هتحذف وظيفة <span className="font-bold text-brand-900">«{confirmJob.title}»</span>{" "}
               نهائيًا. الإجراء ده مش ممكن التراجع عنه.
             </p>
@@ -294,7 +294,7 @@ export default function JobsTable({ jobs }) {
                 type="button"
                 onClick={() => setConfirmJob(null)}
                 disabled={Boolean(busyId)}
-                className="rounded-2xl bg-white px-5 py-2.5 text-[13.5px] font-bold text-brand-900/70 transition-colors duration-150 hover:bg-surface-300 hover:text-brand-900 disabled:opacity-50"
+                className="rounded-2xl bg-surface-300 px-5 py-2.5 text-[14px] font-bold text-brand-900/90 transition-colors duration-150 hover:bg-surface-400 hover:text-brand-900 disabled:opacity-50"
               >
                 إلغاء
               </button>
@@ -302,7 +302,7 @@ export default function JobsTable({ jobs }) {
                 type="button"
                 onClick={handleDelete}
                 disabled={Boolean(busyId)}
-                className="flex items-center justify-center gap-2 rounded-2xl bg-rose-500 px-6 py-2.5 text-[13.5px] font-bold text-white transition-colors duration-150 hover:bg-rose-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/50 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex items-center justify-center gap-2 rounded-2xl bg-rose-600 px-6 py-2.5 text-[14px] font-bold text-white transition-colors duration-150 hover:bg-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/50 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {busyId ? (
                   <>

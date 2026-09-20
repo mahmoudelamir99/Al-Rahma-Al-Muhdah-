@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import {
   COMPANY,
   CONTACT,
@@ -59,7 +60,7 @@ function ColumnTitle({ children }) {
 /* سطر بيانات بأيقونة */
 function InfoRow({ icon, children }) {
   return (
-    <li className="flex items-start gap-2.5 text-xs font-semibold leading-7 text-slate-300 sm:text-sm">
+    <li className="flex items-start gap-2.5 text-xs leading-7 text-slate-300 sm:text-sm">
       <span className="mt-1 shrink-0 text-brand-300">{icon}</span>
       <span className="min-w-0">{children}</span>
     </li>
@@ -94,8 +95,14 @@ function scrollToSection(event, id, attempt = 0) {
   window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
 }
 
-export default function Footer() {
+export default function Footer({ settings = {} }) {
   const year = new Date().getFullYear();
+  const whatsappEnabled = settings?.whatsapp_enabled ?? true;
+  const mapEnabled = settings?.map_enabled ?? true;
+  const contactEmail = settings?.contact_email || CONTACT.email;
+  const contactAddress = settings?.contact_address || CONTACT.addressLines.join(" — ");
+  const contactPhones = settings?.contact_phones || CONTACT.whatsappNumber;
+  const socialLinks = settings?.social_links || {};
 
   return (
     <footer id="contact" className="relative scroll-mt-16 overflow-hidden bg-brand-950 text-slate-300">
@@ -133,22 +140,24 @@ export default function Footer() {
               />
             </div>
 
-            <p className="mt-4 max-w-md text-xs font-semibold leading-8 text-slate-300 sm:text-sm">
+            <p className="mt-4 max-w-md text-xs leading-8 text-slate-400 sm:text-sm">
               {ABOUT_TEXT}
             </p>
 
-            <motion.a
-              href={WHATSAPP_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 400, damping: 22 }}
-              className="btn-shine mt-5 inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-whatsapp-darker via-whatsapp-dark to-whatsapp px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-whatsapp/20 ring-1 ring-inset ring-white/15 transition-shadow hover:shadow-xl hover:shadow-whatsapp/30 sm:text-sm"
-            >
-              <WhatsAppIcon className="relative z-10 h-4 w-4" />
-              <span className="relative z-10">كلمنا على واتساب</span>
-            </motion.a>
+            {whatsappEnabled && (
+              <motion.a
+                href={WHATSAPP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                className="btn-shine mt-5 inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-whatsapp-darker via-whatsapp-dark to-whatsapp px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-whatsapp/20 ring-1 ring-inset ring-white/15 transition-shadow hover:shadow-xl hover:shadow-whatsapp/30 sm:text-sm"
+              >
+                <WhatsAppIcon className="relative z-10 h-4 w-4" />
+                <span className="relative z-10">كلمنا على واتساب</span>
+              </motion.a>
+            )}
           </div>
 
           {/* العمود 2: روابط سريعة */}
@@ -160,13 +169,22 @@ export default function Footer() {
                   <a
                     href={`#${link.id}`}
                     onClick={(event) => scrollToSection(event, link.id)}
-                    className="text-xs font-semibold text-slate-200 transition-colors hover:text-brand-300 sm:text-sm"
+                    className="text-xs text-slate-300 transition-colors hover:text-brand-300 sm:text-sm"
                   >
                     {link.label}
                   </a>
                 </li>
               ))}
             </ul>
+            {Object.entries(socialLinks).length > 0 && (
+              <div className="mt-5 flex-wrap gap-2">
+                {Object.entries(socialLinks).map(([network, href]) => (
+                  <a key={network} href={href} target="_blank" rel="noreferrer" className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-bold text-slate-300 hover:bg-white/20">
+                    {network}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* العمود 3: بيانات التواصل */}
@@ -180,9 +198,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="break-words transition-colors hover:text-brand-300"
                 >
-                  {CONTACT.addressLines[0]}
-                  <br />
-                  {CONTACT.addressLines[1]}
+                  {contactAddress}
                 </a>
               </InfoRow>
 
@@ -194,28 +210,30 @@ export default function Footer() {
 
               <InfoRow icon={<MailIcon />}>
                 <a
-                  href={`mailto:${CONTACT.email}`}
+                  href={`mailto:${contactEmail}`}
                   className="break-all transition-colors hover:text-brand-300"
                 >
-                  {CONTACT.email}
+                  {contactEmail}
                 </a>
               </InfoRow>
 
-              <InfoRow icon={<WhatsAppIcon className="h-4 w-4" />}>
-                <span className="font-bold text-white">
-                  {CONTACT.whatsappName}
-                </span>
-                {" — "}
-                <a
-                  href={WHATSAPP_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  dir="ltr"
-                  className="inline-block break-all transition-colors hover:text-brand-300"
-                >
-                  {CONTACT.whatsappNumber}
-                </a>
-              </InfoRow>
+              {whatsappEnabled && (
+                <InfoRow icon={<WhatsAppIcon className="h-4 w-4" />}>
+                  <span className="font-bold text-white">
+                    {CONTACT.whatsappName}
+                  </span>
+                  {" — "}
+                  <a
+                    href={WHATSAPP_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    dir="ltr"
+                    className="inline-block break-all transition-colors hover:text-brand-300"
+                  >
+                    {contactPhones}
+                  </a>
+                </InfoRow>
+              )}
             </ul>
           </div>
         </div>
@@ -227,14 +245,13 @@ export default function Footer() {
           - زرار فورم التواصل اتشال من هنا (مكرر)، بقى زرار الهيدر هو
             اللي بيفتح المودال مباشرةً.
         */}
+        {mapEnabled && (
         <div className="mt-10 overflow-hidden rounded-2xl border-white/10 bg-white/5 backdrop-blur-sm">
           <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="min-w-0">
               <h3 className="text-sm font-extrabold text-white sm:text-base">زورنا في مقرنا</h3>
-              <p className="mt-1 text-xs font-semibold leading-7 text-slate-300 sm:text-sm">
-                {CONTACT.addressLines[0]}
-                <br />
-                {CONTACT.addressLines[1]}
+              <p className="mt-1 text-xs leading-7 text-slate-400 sm:text-sm">
+                {contactAddress}
               </p>
             </div>
 
@@ -266,6 +283,7 @@ export default function Footer() {
             allowFullScreen
           />
         </div>
+        )}
 
         {/*
           سطر الحقوق.
@@ -274,9 +292,14 @@ export default function Footer() {
           من غير ما يبقى فيه وعد صريح بالمجانية مكتوب في الموقع.
         */}
         <div className="mt-8 border-t border-white/10 pt-6 text-center">
-          <p className="text-[11px] font-semibold text-slate-400 sm:text-xs">
+          <p className="text-[11px] text-slate-400 sm:text-xs">
             © {year} {COMPANY.name}. جميع الحقوق محفوظة.
           </p>
+          <div className="mt-3 flex items-center justify-center gap-4 text-[11px] font-bold sm:text-xs">
+            <Link href="/terms" className="text-slate-400 transition-colors hover:text-brand-300">
+              الشروط والأحكام
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -79,7 +79,7 @@ function MenuIcon({ open }) {
   );
 }
 
-export default function Header() {
+export default function Header({ whatsappEnabled = true }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [trackOpen, setTrackOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
@@ -158,7 +158,7 @@ export default function Header() {
               key={link.id}
               href={`#${link.id}`}
               onClick={(event) => handleNav(event, link.id)}
-              className="rounded-lg px-3 py-2 text-sm font-bold text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-700"
+              className="rounded-lg px-3 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
             >
               {link.label}
             </a>
@@ -173,24 +173,26 @@ export default function Header() {
           تتبع طلبك
         </button>
 
-        {/* زرار واتساب - على الشمال */}
-        <motion.a
-          href={WHATSAPP_LINK}
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{
-            scale: 1.05,
-            transition: { type: "spring", stiffness: 320, damping: 20 },
-          }}
-          whileTap={{
-            scale: 0.95,
-            transition: { type: "spring", stiffness: 400, damping: 22 },
-          }}
-          className="btn-shine flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-l from-whatsapp-darker via-whatsapp-dark to-whatsapp px-3 py-2 text-xs font-bold text-white shadow-sm shadow-whatsapp/30 ring-1 ring-inset ring-white/15 transition-shadow hover:shadow-lg hover:shadow-whatsapp/35 sm:px-4 sm:text-sm"
-        >
-          <WhatsAppIcon className="relative z-10 h-4 w-4 sm:h-5 sm:w-5" />
-          <span className="relative z-10">تواصل معنا واتساب</span>
-        </motion.a>
+        {/* زرار واتساب - على الشمال (بيختفي لو الأدمن وقّفه من لوحة التحكم) */}
+        {whatsappEnabled && (
+          <motion.a
+            href={WHATSAPP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{
+              scale: 1.05,
+              transition: { type: "spring", stiffness: 320, damping: 20 },
+            }}
+            whileTap={{
+              scale: 0.95,
+              transition: { type: "spring", stiffness: 400, damping: 22 },
+            }}
+            className="btn-shine flex shrink-0 items-center gap-1.5 rounded-full bg-gradient-to-l from-whatsapp-darker via-whatsapp-dark to-whatsapp px-3 py-2 text-xs font-bold text-white shadow-sm shadow-whatsapp/30 ring-1 ring-inset ring-white/15 transition-shadow hover:shadow-lg hover:shadow-whatsapp/35 sm:px-4 sm:text-sm"
+          >
+            <WhatsAppIcon className="relative z-10 h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="relative z-10">تواصل معنا واتساب</span>
+          </motion.a>
+        )}
 
         {/* زرار قائمة الموبايل */}
         <button
@@ -198,7 +200,7 @@ export default function Header() {
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? "إغلاق القائمة" : "فتح القائمة"}
           aria-expanded={menuOpen}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/70 text-slate-700 ring-1 ring-slate-200 transition hover:bg-white md:hidden"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/70 text-slate-600 ring-1 ring-slate-200 transition hover:bg-white md:hidden"
         >
           <MenuIcon open={menuOpen} />
         </button>
@@ -221,7 +223,7 @@ export default function Header() {
                   key={link.id}
                   href={`#${link.id}`}
                   onClick={(event) => handleNav(event, link.id)}
-                  className="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-brand-50 hover:text-brand-700"
+                  className="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
                 >
                   {link.label}
                 </a>

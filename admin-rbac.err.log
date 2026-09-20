@@ -1,0 +1,53 @@
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (113kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (267kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+[Error: ENOENT: no such file or directory, stat 'K:\WEBSIT\Alrahma\Alrahma Admin\.next\cache\webpack\client-development\2.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'K:\\WEBSIT\\Alrahma\\Alrahma Admin\\.next\\cache\\webpack\\client-development\\2.pack.gz'
+}
+ ⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat 'K:\WEBSIT\Alrahma\Alrahma Admin\.next\cache\webpack\client-development\2.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'K:\\WEBSIT\\Alrahma\\Alrahma Admin\\.next\\cache\\webpack\\client-development\\2.pack.gz'
+}
+ ⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat 'K:\WEBSIT\Alrahma\Alrahma Admin\.next\cache\webpack\client-development\2.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'K:\\WEBSIT\\Alrahma\\Alrahma Admin\\.next\\cache\\webpack\\client-development\\2.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat 'K:\WEBSIT\Alrahma\Alrahma Admin\.next\cache\webpack\client-development\2.pack.gz'
+ ⨯ [TypeError: a[d] is not a function] { digest: '1163526022' }
+[TypeError: a[d] is not a function]
+ ⨯ [TypeError: a[d] is not a function]
+ ⨯ [TypeError: a[d] is not a function] { page: '/' }
+ ⨯ Error: ENOENT: no such file or directory, open 'K:\WEBSIT\Alrahma\Alrahma Admin\.next\server\vendor-chunks\@supabase.js'
+    at <unknown> (K:\WEBSIT\Alrahma\Alrahma Admin\.next\server\app\page.js:291:47)
+    at Object.<anonymous> (K:\WEBSIT\Alrahma\Alrahma Admin\.next\server\app\page.js:294:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'K:\\WEBSIT\\Alrahma\\Alrahma Admin\\.next\\server\\vendor-chunks\\@supabase.js',
+  page: '/'
+}
+[Error: ENOENT: no such file or directory, stat 'K:\WEBSIT\Alrahma\Alrahma Admin\.next\cache\webpack\server-development\0.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'K:\\WEBSIT\\Alrahma\\Alrahma Admin\\.next\\cache\\webpack\\server-development\\0.pack.gz'
+}
+ ⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat 'K:\WEBSIT\Alrahma\Alrahma Admin\.next\cache\webpack\server-development\0.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'K:\\WEBSIT\\Alrahma\\Alrahma Admin\\.next\\cache\\webpack\\server-development\\0.pack.gz'
+}
+ ⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat 'K:\WEBSIT\Alrahma\Alrahma Admin\.next\cache\webpack\server-development\0.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'K:\\WEBSIT\\Alrahma\\Alrahma Admin\\.next\\cache\\webpack\\server-development\\0.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat 'K:\WEBSIT\Alrahma\Alrahma Admin\.next\cache\webpack\server-development\0.pack.gz'

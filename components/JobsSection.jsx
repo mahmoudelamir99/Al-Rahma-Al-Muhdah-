@@ -4,8 +4,12 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import JobCard from "./JobCard";
 import ApplyModal from "./ApplyModal";
-import { jobs } from "@/data/jobs";
 
+/*
+ * الوظائف بقت بتجي من السيرفر (Supabase) مش من ملف ثابت في الكود.
+ * الصفحة (app/page.js) هي اللي بتقرأها وتمرّرها هنا كـ props، فأي تعديل
+ * من لوحة التحكم بيظهر على الموقع من غير أي لمس للكود.
+ */
 // إعداد stagger: كل كارت يظهر بعد اللي قبله
 const listVariants = {
   hidden: {},
@@ -14,7 +18,7 @@ const listVariants = {
   },
 };
 
-export default function JobsSection() {
+export default function JobsSection({ jobs = [] }) {
   const [selectedJob, setSelectedJob] = useState(null);
 
   return (
@@ -53,28 +57,44 @@ export default function JobsSection() {
           <h2 className="text-gradient-brand text-xl font-extrabold sm:text-3xl">
             الوظائف المتاحة
           </h2>
-          <p className="mt-3 text-sm font-semibold text-slate-600 sm:text-base">
+          <p className="mt-3 text-sm text-slate-500 sm:text-base">
             فرص عمل مجانية تماماً بالشركات العالمية الموجودة في مصر
           </p>
         </motion.div>
 
-        {/* شبكة الكروت - ملائمة للموبايل (عمود واحد) */}
-        <motion.div
-          variants={listVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.15 }}
-          className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3"
-        >
-          {jobs.map((job, index) => (
-            <JobCard
-              key={job.id}
-              job={job}
-              index={index}
-              onApply={setSelectedJob}
-            />
-          ))}
-        </motion.div>
+        {/*
+          شبكة الكروت - ملائمة للموبايل (عمود واحد).
+          لو الجدول فاضل أو الأدمن قفل كل الوظائف، بنعرض رسالة واضحة
+          بدل ما تبان مساحة فاضية مبهمة للزائر.
+        */}
+        {jobs.length === 0 ? (
+          <div className="rounded-3xl border-white/70 bg-white/60 p-10 text-center backdrop-blur-sm">
+            <p className="text-base font-bold text-slate-700">
+              مفيش وظائف متاحة حالياً
+            </p>
+            <p className="mt-2 text-sm text-slate-500">
+              تابعنا قريب — بنضيف فرص جديدة باستمرار. وتقدر تسيب بياناتك من قسم
+              «اطلب وظيفتك» وفريقنا يتواصل معاك.
+            </p>
+          </div>
+        ) : (
+          <motion.div
+            variants={listVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3"
+          >
+            {jobs.map((job, index) => (
+              <JobCard
+                key={job.id}
+                job={job}
+                index={index}
+                onApply={setSelectedJob}
+              />
+            ))}
+          </motion.div>
+        )}
       </div>
 
       {/* المودال - SPA بدون صفحة جديدة */}

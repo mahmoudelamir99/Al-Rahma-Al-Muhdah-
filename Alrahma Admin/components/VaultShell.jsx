@@ -164,12 +164,9 @@ export default function VaultShell() {
             transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
             className="mt-5 text-center"
           >
-            <h1 className="text-[1.35rem] font-extrabold leading-snug text-brand-950 sm:text-2xl">
-              لوحة التحكم <span className="text-gradient-gold">الخاصة</span>
+            <h1 className="text-[1.45rem] font-extrabold leading-snug text-brand-950 sm:text-[1.6rem]">
+              تسجيل الدخول
             </h1>
-            <p className="mx-auto mt-2 max-w-[22rem] text-[13px] leading-relaxed text-brand-900/50">
-              منطقة مقفولة — الدخول للمصرّح لهم فقط.
-            </p>
           </motion.div>
 
           <div className="divider-gold my-6" />
@@ -187,7 +184,7 @@ export default function VaultShell() {
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-[13px] font-bold text-brand-900/80"
+                className="mb-2 block text-[13.5px] font-bold text-brand-900"
               >
                 البريد الإلكتروني
               </label>
@@ -207,7 +204,7 @@ export default function VaultShell() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="field-light w-full rounded-2xl py-3.5 pl-4 pr-11 text-left text-[15px]"
+                  className="field-light w-full rounded-2xl py-3.5 pl-4 pr-11 text-left text-[15.5px] font-semibold"
                 />
               </div>
             </div>
@@ -216,7 +213,7 @@ export default function VaultShell() {
             <div>
               <label
                 htmlFor="password"
-                className="mb-2 block text-[13px] font-bold text-brand-900/80"
+                className="mb-2 block text-[13.5px] font-bold text-brand-900"
               >
                 كلمة المرور
               </label>
@@ -235,7 +232,7 @@ export default function VaultShell() {
                   onKeyUp={(e) => setCapsOn(e.getModifierState?.("CapsLock") ?? false)}
                   onBlur={() => setCapsOn(false)}
                   placeholder="••"
-                  className="field-light w-full rounded-2xl py-3.5 pl-11 pr-11 text-left text-[15px]"
+                  className="field-light w-full rounded-2xl py-3.5 pl-11 pr-11 text-left text-[15.5px] font-semibold"
                 />
                 <button
                   type="button"
@@ -257,7 +254,7 @@ export default function VaultShell() {
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
-                    className="mt-2 text-[12px] font-medium text-copper-600"
+                    className="mt-2 text-[12.5px] font-bold text-copper-700"
                   >
                     تنبيه: زر Caps Lock مفعّل.
                   </motion.p>
@@ -277,7 +274,7 @@ export default function VaultShell() {
                 >
                   <p
                     role="alert"
-                    className="flex items-center gap-2 rounded-2xl border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13px] font-semibold text-rose-700"
+                    className="flex items-center gap-2 rounded-2xl border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13.5px] font-bold text-rose-800"
                   >
                     <IconAlert className="h-4 w-4 shrink-0" />
                     {error}
@@ -290,7 +287,7 @@ export default function VaultShell() {
             <button
               type="submit"
               disabled={loading}
-              className="group mt-2 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-brand-800 px-5 py-3.5 text-[15px] font-bold text-white transition-colors duration-150 ease-out hover:bg-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-copper-400/50 disabled:cursor-not-allowed disabled:opacity-70"
+              className="btn-shine mt-2 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-brand-800 px-5 py-3.5 text-[15.5px] font-bold text-white transition-colors duration-150 ease-out hover:bg-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-copper-400/50 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading ? (
                 <>
@@ -306,26 +303,10 @@ export default function VaultShell() {
             </button>
           </motion.form>
 
-          {/* تذييل الكارت — بدون أي روابط */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.32 }}
-            className="mt-7 text-center text-[11.5px] leading-relaxed text-brand-900/45"
-          >
-            محاولات الدخول مرصودة. أي وصول غير مصرّح به مسؤولية قانونية.
-          </motion.p>
+          {/* تذييل الكارت */}
         </div>
 
-        {/* اسم الجهة تحت الكارت */}
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-6 text-center text-[12px] tracking-wide text-brand-900/45"
-        >
-          الرحمة المهداة للتوظيف — إدارة النظام
-        </motion.p>
+
       </motion.section>
     </main>
   );

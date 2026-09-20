@@ -7,7 +7,47 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /* ==========================================================================
    كل عمليات الوظائف هنا. بتحقق من الجلسة الأول، وبعدين بتنفّذ بمفتاح الخدمة.
+
+   ⚡ التزامن الفوري مع الموقع الأساسي (بند مهم في Sprint 2):
+   الموقع بيبني صفحة الوظائف وبيخزّنها مؤقتاً 30 ثانية. عشان أي تعديل من
+   اللوحة يظهر للزوار فوراً من غير ما نستنى الفترة دي، بننادي
+   `revalidatePath("/")` — دي بتفضّي الكاش بتاع الصفحة الرئيسية على
+   السيرفر، فأول زيارة بعدها بتجيب البيانات الجديدة من قاعدة البيانات.
+
+   ملاحظة معمورية: اللوحة والموقع مشروعان منفصلان (بورت 3001 و 3000)،
+   و revalidatePath بتأثر على كاش نفس المشروع بس. فبننادي كمان على
+   `revalidatePublicSite()` اللي بتكلّم الموقع عبر Webhook لو مضبوط
+   في متغير البيئة SITE_REVALIDATE_URL — ولو مش مضبوط، بنعتمد على
+   الفترة القصيرة (30 ثانية) وبتبقى مقبولة تماماً في التشغيل المحلي.
    ========================================================================== */
+
+const PUBLIC_SITE_URL = process.env.SITE_REVALIDATE_URL || "http://localhost:3000";
+const REVALIDATE_SECRET = process.env.SITE_REVALIDATE_SECRET || "";
+
+/** بنبلّغ الموقع الأساسي إن بيانات الوظائف اتغيرت (بيتجاهل الفشل بهدوء) */
+async function revalidatePublicSite() {
+  try {
+    await fetch(`${PUBLIC_SITE_URL}/api/revalidate-jobs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(REVALIDATE_SECRET ? { "x-revalidate-secret": REVALIDATE_SECRET } : {}),
+      },
+      // مهم: من غير cache، ولازم ما يعلّقش اللوحة لو الموقع واقف
+      cache: "no-store",
+      signal: AbortSignal.timeout(2500),
+    });
+  } catch {
+    // الموقع مش شغال أو الـ webhook غير مضبوط — مشكلة تكسر اللوحة
+  }
+}
+
+/** بننضّف الكاش المحلي + بنبلّغ الموقع */
+async function revalidateEverything() {
+  revalidatePath("/dashboard/jobs");
+  revalidatePath("/dashboard");
+  await revalidatePublicSite();
+}
 
 async function requireAdmin() {
   const supabase = await createSupabaseServerClient();
@@ -77,8 +117,7 @@ export async function createJob(input) {
 
   if (error) return { ok: false, error: `تعذّرت الإضافة: ${error.message}` };
 
-  revalidatePath("/dashboard/jobs");
-  revalidatePath("/dashboard");
+  await revalidateEverything();
   return { ok: true, message: "تمت إضافة الوظيفة بنجاح." };
 }
 
@@ -98,8 +137,7 @@ export async function updateJob(id, input) {
 
   if (error) return { ok: false, error: `تعذّر التعديل: ${error.message}` };
 
-  revalidatePath("/dashboard/jobs");
-  revalidatePath("/dashboard");
+  await revalidateEverything();
   return { ok: true, message: "تم تعديل الوظيفة بنجاح." };
 }
 
@@ -115,7 +153,6 @@ export async function deleteJob(id) {
 
   if (error) return { ok: false, error: `تعذّر الحذف: ${error.message}` };
 
-  revalidatePath("/dashboard/jobs");
-  revalidatePath("/dashboard");
+  await revalidateEverything();
   return { ok: true, message: "تم حذف الوظيفة نهائيًا." };
 }

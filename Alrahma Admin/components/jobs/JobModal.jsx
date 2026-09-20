@@ -18,6 +18,31 @@ const JOB_SUGGESTIONS = [
 
 const COMPANY_OPTIONS = ["ليوني", "LG", "الرحمة المهداة", "أخرى"];
 
+/* اقتراحات المكان (محافظات ومناطق شغّالة فعلاً في السوق) */
+const LOCATION_OPTIONS = [
+  "القاهرة - مدينة نصر",
+  "القاهرة - العاشر من رمضان",
+  "العاشر من رمضان",
+  "الجيزة - 6 أكتوبر",
+  "الإسكندرية",
+  "الشرقية - العاشر من رمضان",
+  "السويس",
+  "بورسعيد",
+  "المنوفية",
+  "الغربية",
+];
+
+/* اقتراحات نظام الوردية — بتوفّر كتابة متكررة */
+const SCHEDULE_OPTIONS = [
+  "8 ساعات / ورديات",
+  "8 ساعات / صباحي",
+  "9 ساعات / صباحي",
+  "10 ساعات / ورديات",
+  "12 ساعة / ورديات",
+  "وردية ليلية",
+  "عمل مرن / عن بعد",
+];
+
 const EMPTY = {
   title: "",
   company: "",
@@ -111,9 +136,12 @@ export default function JobModal({ open, job, onClose, onSave }) {
     onClose();
   }
 
-  const label = "mb-1.5 block text-[12.5px] font-bold text-brand-900/75";
+  const label = "mb-1.5 block text-[13px] font-bold text-brand-900";
   const field =
-    "w-full rounded-2xl border-surface-500 bg-white px-3.5 py-2.5 text-[14px] text-brand-900 transition-colors duration-150 focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-500/10";
+    "field-light w-full rounded-2xl px-3.5 py-2.5 text-[14px]";
+
+  // حقل نصي عادي + داتاليست للاقتراحات (بيسرّع الإدخال المتكرر)
+  const isAvailable = form.status !== "closed";
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto p-4 sm:items-center">
@@ -131,15 +159,15 @@ export default function JobModal({ open, job, onClose, onSave }) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.18, ease: "easeOut" }}
-        className="relative z-10 my-auto w-full max-w-3xl rounded-3xl border-white/80 bg-surface-100 shadow-lift"
+        className="relative z-10 my-auto w-full max-w-3xl rounded-3xl border-surface-400 bg-surface-100 shadow-lift"
       >
         {/* الترويسة */}
         <div className="flex items-center justify-between gap-3 border-b border-surface-400 px-5 py-4 sm:px-6">
           <div className="min-w-0">
-            <h2 className="text-[16px] font-extrabold text-brand-900">
+            <h2 className="text-[17px] font-extrabold text-brand-900">
               {isEdit ? "تعديل وظيفة" : "إضافة وظيفة جديدة"}
             </h2>
-            <p className="mt-0.5 text-[11.5px] text-brand-900/50">
+            <p className="mt-0.5 text-[12.5px] font-semibold text-brand-900/70">
               {isEdit ? "عدّل البيانات ثم اضغط حفظ." : "املأ البيانات ثم اضغط إضافة."}
             </p>
           </div>
@@ -148,7 +176,7 @@ export default function JobModal({ open, job, onClose, onSave }) {
             onClick={onClose}
             disabled={busy}
             aria-label="إغلاق"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-brand-900/60 transition-colors duration-150 hover:bg-surface-300 hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/40 disabled:opacity-50"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-surface-300 text-brand-900/80 transition-colors duration-150 hover:bg-surface-400 hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/40 disabled:opacity-50"
           >
             <IconClose className="h-[18px] w-[18px]" />
           </button>
@@ -202,15 +230,21 @@ export default function JobModal({ open, job, onClose, onSave }) {
             {/* الموقع */}
             <div>
               <label className={label} htmlFor="job-location">
-                المكان
+                الموقع (المحافظة / المنطقة)
               </label>
               <input
                 id="job-location"
+                list="location-options"
                 value={form.location}
                 onChange={set("location")}
                 placeholder="مثال: العاشر من رمضان"
                 className={field}
               />
+              <datalist id="location-options">
+                {LOCATION_OPTIONS.map((l) => (
+                  <option key={l} value={l} />
+                ))}
+              </datalist>
             </div>
 
             {/* وصف الوظيفة */}
@@ -305,33 +339,78 @@ export default function JobModal({ open, job, onClose, onSave }) {
               />
             </div>
 
+            {/*
+              حالة الوظيفة — Toggle (متاحة / مغلقة) زي ما اتطلب بالحرف.
+              بنستخدم زرار بـ role="switch" عشان يبقى متاح لقارئ الشاشة كمان،
+              والتبديل بين الحالتين بكليكة واحدة بدل قائمة منسدلة.
+            */}
             <div>
-              <label className={label} htmlFor="job-status">
+              <span className={label} id="job-status-label">
                 حالة الوظيفة
-              </label>
-              <select
-                id="job-status"
-                value={form.status}
-                onChange={set("status")}
-                className={field}
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isAvailable}
+                aria-labelledby="job-status-label"
+                onClick={() =>
+                  setForm((f) => ({ ...f, status: isAvailable ? "closed" : "available" }))
+                }
+                className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-3.5 py-2.5 text-[14px] font-bold transition-colors duration-150 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15 ${
+                  isAvailable
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                    : "border-surface-500 bg-surface-300 text-brand-900/75"
+                }`}
               >
-                <option value="available">متاحة</option>
-                <option value="closed">مغلقة</option>
-              </select>
+                <span className="flex items-center gap-2">
+                  <span
+                    aria-hidden="true"
+                    className={`h-2.5 w-2.5 rounded-full ${
+                      isAvailable ? "bg-emerald-500" : "bg-brand-900/40"
+                    }`}
+                  />
+                  {isAvailable ? "متاحة" : "مغلقة"}
+                </span>
+
+                {/* جسم الـ Toggle */}
+                <span
+                  aria-hidden="true"
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-150 ${
+                    isAvailable ? "bg-emerald-500" : "bg-brand-900/25"
+                  }`}
+                >
+                  <span
+                    className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-150"
+                    style={{ transform: `translateX(${isAvailable ? "-1.375rem" : "0"})` }}
+                  />
+                </span>
+              </button>
+              <p className="mt-1.5 text-[12px] font-semibold text-brand-900/60">
+                {isAvailable
+                  ? "الوظيفة ظاهرة للزوار على الموقع."
+                  : "الوظيفة مخفية عن الزوار (لسه محفوظة في القاعدة)."}
+              </p>
             </div>
 
             {/* تفاصيل إضافية */}
+            {/* ساعات العمل / نظام الوردية */}
             <div>
               <label className={label} htmlFor="job-schedule">
-                مواعيد العمل
+                ساعات العمل / نظام الوردية
               </label>
               <input
                 id="job-schedule"
+                list="schedule-options"
                 value={form.schedule}
                 onChange={set("schedule")}
                 placeholder="مثال: 8 ساعات / ورديات"
                 className={field}
               />
+              <datalist id="schedule-options">
+                {SCHEDULE_OPTIONS.map((s) => (
+                  <option key={s} value={s} />
+                ))}
+              </datalist>
             </div>
 
             <div>
@@ -352,7 +431,7 @@ export default function JobModal({ open, job, onClose, onSave }) {
           {error && (
             <p
               role="alert"
-              className="mt-4 rounded-2xl border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13px] font-semibold text-rose-700"
+              className="mt-4 rounded-2xl border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13.5px] font-bold text-rose-800"
             >
               {error}
             </p>
@@ -365,25 +444,25 @@ export default function JobModal({ open, job, onClose, onSave }) {
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="rounded-2xl bg-white px-5 py-2.5 text-[13.5px] font-bold text-brand-900/70 transition-colors duration-150 hover:bg-surface-300 hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/40 disabled:opacity-50"
-          >
-            إلغاء
+              className="rounded-2xl bg-surface-300 px-5 py-2.5 text-[14px] font-bold text-brand-900/90 transition-colors duration-150 hover:bg-surface-400 hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/40 disabled:opacity-50"
+            >
+              إلغاء
           </button>
           <button
             type="button"
             onClick={submit}
             disabled={busy}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-brand-600 px-6 py-2.5 text-[13.5px] font-bold text-white transition-colors duration-150 hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn-shine flex items-center justify-center gap-2 rounded-2xl bg-brand-700 px-6 py-2.5 text-[14px] font-bold text-white transition-colors duration-150 hover:bg-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/50 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {busy ? (
               <>
-                <IconLoader className="h-4 w-4 animate-spin" />
-                جاري الحفظ…
+                <IconLoader className="relative z-10 h-4 w-4 animate-spin" />
+                <span className="relative z-10">جاري الحفظ…</span>
               </>
-            ) : isEdit ? (
-              "حفظ التعديلات"
             ) : (
-              "إضافة الوظيفة"
+              <span className="relative z-10">
+                {isEdit ? "حفظ التعديلات" : "إضافة الوظيفة"}
+              </span>
             )}
           </button>
         </div>

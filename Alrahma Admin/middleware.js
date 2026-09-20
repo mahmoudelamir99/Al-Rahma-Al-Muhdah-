@@ -7,26 +7,39 @@ import { createServerClient } from "@supabase/ssr";
  * - يمنع أي دخول لـ /dashboard من غير تسجيل دخول.
  * - يمنع الزائر المسجّل من رؤية شاشة الدخول (يرجّعه للوحة).
  *
- * ملاحظة عن المفاتيح: مشروع Supabase ده لسه ما فيهوش anon key في
- * Supabase → Project Settings → API، فبنستخدم مفتاح الخدمة كاحتياط
- * عشان اللوحة تشتغل من أول لحظة. أول ما تضيف الـ anon key في
- * .env.local، الكود بيستخدمه أوتوماتيك من غير أي تعديل تاني.
+ * ⚡ الأداء (أهم حاجة هنا):
+ * الحاضر على كل طلب كان `supabase.auth.getUser()` — وده **نداء شبكة فعلي
+ * لسيرفرات Supabase**. يعني كل كليك على أي رابط في القائمة كان بينتظر
+ * رحلة كاملة ذهاب وعودة قبل ما الصفحة تبدأ تتحمّل أصلاً. ده كان السبب
+ * الأساسي في إحساس "الأزرار بطيئة".
+ *
+ * الحل: التحقق الكامل (الفاخص للتوكن مع Supabase) بقى بيحصل **مرة واحدة فقط
+ * عند الدخول لـ /dashboard** — كل تنقّل بعده بين صفحات اللوحة بيعدي فوراً
+ * من غير أي نداء شبكة، والحماية نفسها فاضلة شغالة من طبقتين:
+ *   1) الـ middleware (فحص وجود الكوكيز + الفحص الكامل عند أول دخول).
+ *   2) app/dashboard/layout.js (بتتحقق من السيرفر لكل صفحة محمية).
+ *
+ * 🔒 ملاحظة أمنية مهمة (كانت ثغرة):
+ * قبل كده كان الكود بيرجع لمفتاح الخدمة (SERVICE_ROLE_KEY) لو الـ anon key
+ * مش موجود — ومفتاح الخدمة ده **بيتجاوز كل سياسات RLS** على قاعدة البيانات.
+ * الـ middleware دايمًا شغال على حافة السيرفر وتحت هجوم مباشر، فأي استخدام
+ * له للمفتاح الخطير ده مخاطرة مش مبررة، خصوصاً إن الـ anon key موجود أصلاً
+ * في .env.local دلوقتي. بقينا نستخدم **الـ anon key بس** للتحقق من الجلسة،
+ * واللي هو المفتاح المصمّم لهذا الغرض بالظبط.
  */
 export async function middleware(request) {
   let response = NextResponse.next({ request });
 
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key =
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
     return response;
   }
 
-  // خوان كعيكيز الجلسة (بيحقق بيهم عميل Supabase)
   const cookieHeader = request.cookies.getAll();
 
-  // كيكي فاضي على /dashboard = مفيش جلسة → نرجّع للشاشة فورًا
+  // كوكي فاضي على /dashboard = مفيش جلسة → نرجّع للشاشة فورًا
   // من غير أي نداء شبكة (ده اللي كان بيخلي الطلب يعلّق).
   const hasSessionCookie = cookieHeader.some(
     (c) => c.name === "sb-access-token" || c.name.startsWith("sb-") && c.name.includes("auth-token")
@@ -44,6 +57,18 @@ export async function middleware(request) {
 
   // لو مفيش كوكيز محفوظة على المسارات التانية، مش محتاجين نتكلم مع Supabase خالص
   if (!hasSessionCookie) {
+    return response;
+  }
+
+  /*
+   * ⚡ هنا قلب الأداء:
+   * اللي بيوصل هنا بقى حالتين بس — إما أول فتح لشاشة الدخول "/"، أو فتح
+   * الصفحة الرئيسية للوحة "/dashboard" بالحرف. التنقّل بين باقي الأقسام
+   * (/dashboard/jobs مثلاً) بيعدي فوراً من غير أي نداء شبكة، والفحص الكامل
+   * لسه شغال على أول دخول للوحة عشان نطرد أي كوكي مزيف أو منتهي.
+   */
+  const isDashboardEntry = pathname === "/dashboard";
+  if (!isDashboardEntry && pathname !== "/") {
     return response;
   }
 

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getCurrentAdminContext } from "@/lib/rbac";
 import AdminShell from "@/components/AdminShell";
+import SupportNotice from "@/components/SupportNotice";
 
 /**
  * هيكل اللوحة — محمي على مستويين:
@@ -12,14 +13,13 @@ export const metadata = {
 };
 
 export default async function DashboardLayout({ children }) {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const context = await getCurrentAdminContext();
+  if (!context.ok) redirect(context.forceLogout ? "/auth/logout" : "/");
 
-  if (!user) {
-    redirect("/");
-  }
-
-  return <AdminShell user={{ email: user.email }}>{children}</AdminShell>;
+  return (
+    <AdminShell user={{ email: context.user.email }} admin={context.admin} isSuperAdmin={context.isSuperAdmin}>
+      <SupportNotice notice={context.user.app_metadata?.support_notice} />
+      {children}
+    </AdminShell>
+  );
 }

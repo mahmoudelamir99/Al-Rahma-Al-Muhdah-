@@ -3,7 +3,9 @@
 import { motion } from "framer-motion";
 import { COMPANY, ABOUT_TEXT } from "@/lib/siteConfig";
 
-export default function Hero() {
+export default function Hero({ settings = {} }) {
+  const heroTitle = settings.hero_title || COMPANY.name;
+  const heroSubtitle = settings.hero_subtitle || COMPANY.tagline;
   const handleScrollToJobs = () => {
     const jobsSection = document.getElementById("jobs");
     if (jobsSection) {
@@ -51,8 +53,8 @@ export default function Hero() {
           بعد الـ hydration) عشان الفيديو يبدأ ينزّل فور فتح الصفحة،
           وأول فريم يبان من غير أي تأخير.
         */}
-        <source src="/hero-video.webm" type="video/webm" />
-        <source src="/hero-video.mp4" type="video/mp4" />
+        <source src={settings.hero_video_url || "/hero-video.webm"} type="video/webm" />
+        {!settings.hero_video_url && <source src="/hero-video.mp4" type="video/mp4" />}
       </video>
 
       {/*
@@ -68,7 +70,7 @@ export default function Hero() {
       </div>
 
       <div className="sr-only">
-        <p>{`${COMPANY.name} — ${COMPANY.tagline}`}</p>
+        <p>{`${heroTitle} — ${heroSubtitle}`}</p>
         <p>{ABOUT_TEXT}</p>
       </div>
 
@@ -87,10 +89,10 @@ export default function Hero() {
             scale: 0.97,
             transition: { type: "spring", stiffness: 400, damping: 22 },
           }}
-          className="btn-shine btn-pulse group w-full max-w-sm rounded-xl bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 px-6 py-3 text-sm font-extrabold text-white shadow-xl shadow-brand-950/30 ring-1 ring-inset ring-white/20 transition-shadow hover:shadow-2xl hover:shadow-brand-600/40 sm:w-auto sm:px-8 sm:text-base"
+          className="btn-shine btn-pulse group w-full max-w-sm rounded-xl bg-gradient-to-l from-brand-700 via-brand-600 to-brand-500 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-brand-950/30 ring-1 ring-inset ring-white/20 transition-shadow hover:shadow-2xl hover:shadow-brand-600/40 sm:w-auto sm:px-8 sm:text-base"
         >
           <span className="relative z-10 flex items-center justify-center gap-2">
-            شاهد الوظائف المتاحة
+            {heroTitle || "شاهد الوظائف المتاحة"}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"

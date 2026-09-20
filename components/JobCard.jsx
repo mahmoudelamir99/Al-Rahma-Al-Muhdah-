@@ -27,18 +27,64 @@ const cardVariants = {
   },
 };
 
+/*
+ * أيقونات صغيرة للكارت — كلها SVG مضمّنة (مفيش أي مكتبة خارجية).
+ * الحقول الثلاثة الجديدة (المؤهل / الخبرة / نوع الدوام) لازم يكون ليها
+ * أيقونات مفهومة من نظرة واحدة، عشان الكارت ميحتاجش توضيح مكتوب.
+ */
 function Icon({ name }) {
   const paths = {
     money: <><rect x="2" y="6" width="20" height="12" rx="2" /><circle cx="12" cy="12" r="2.5" /><path d="M6 6v2m12-2v2M6 16v2m12-2v2" /></>,
     location: <><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></>,
     clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
+    // المؤهل المطلوب — قبعة التخرج
+    education: <><path d="M2 8.5 12 4l10 4.5-10 4.5L2 8.5Z" /><path d="M6 10.5V16c0 1.1 2.7 2.5 6 2.5s6-1.4 6-2.5v-5.5" /><path d="M21 9v5" /></>,
+    // الخبرة المطلوبة — حقيبة عمل
+    experience: <><rect x="2.5" y="7.5" width="19" height="13" rx="2.5" /><path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5" /><path d="M2.5 12.5h19" /></>,
+    // نوع الدوام — ساعة رملية (يلوّح على نوع التعاقد)
+    type: <><path d="M7 3h10" /><path d="M7 21h10" /><path d="M8 3v3.5c0 1.5 1.5 3 2.5 4-1 1-2.5 2.5-2.5 4V21" /><path d="M16 3v3.5c0 1.5-1.5 3-2.5 4 1 1 2.5 2.5 2.5 4V21" /></>,
   };
-  return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true">{paths[name]}</svg>;
+  return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0" aria-hidden="true">{paths[name]}</svg>;
+}
+
+/**
+ * شارة معلومة واحدة في الكارت — تصميم زجاجي خفيف مع أيقونة صغيرة.
+ *
+ * ملاحظات مهمة عن التخطيط:
+ *  - min-w-0 + truncate: لو النص طويل (زي "بكالوريوس هندسة مدنية") بيتقص
+ *    بنقط بدل ما يخرج بره الإطار — دي أهم نقطة لمنع الكسر على الموبايل.
+ *  - title: النص الكامل بيبان لما المستخدم يقف بالماوس.
+ *  - shrink-0 على الأيقونة: الحروف متضغطش عليها.
+ */
+function Chip({ icon, label, value, hint }) {
+  if (!value) return null; // حقل فاضي مش بياخد مساحة
+  return (
+    <div className="flex min-w-0 items-center gap-2 rounded-xl bg-white/55 px-2.5 py-2 ring-1 ring-inset ring-white/60">
+      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-brand-500/10 text-brand-600">
+        <Icon name={icon} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">
+          {label}
+        </span>
+        <span className="block truncate text-xs font-semibold text-slate-700" title={value}>
+          {value}
+        </span>
+      </span>
+    </div>
+  );
 }
 
 export default function JobCard({ job, onApply }) {
-  const isFull = job.applicants >= job.required;
-  const progress = Math.min((job.applicants / job.required) * 100, 100);
+  /*
+   * الوظايف بقت جاية من قاعدة البيانات، والعدد المطلوب ممكن يكون صفر
+   * (الأدمن يقدر يحطه في الفورم). القسمة على صفر بتطلع NaN وبتكسر شريط
+   * التقدم، فبنحميها صراحةً بدل ما نعتمد على إن القيمة دايمًا موجبة.
+   */
+  const required = Number(job.required) || 0;
+  const applicants = Number(job.applicants) || 0;
+  const isFull = required > 0 && applicants >= required;
+  const progress = required > 0 ? Math.min((applicants / required) * 100, 100) : 0;
 
   const cardRef = useRef(null);
   const canTilt = useRef(false);
@@ -116,30 +162,41 @@ export default function JobCard({ job, onApply }) {
 
       <span className="absolute inset-x-0 top-0 h-1 rounded-t-2xl bg-gradient-to-l from-brand-400 to-brand-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-      <div className="flex items-center gap-3">
-        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[10px] font-black tracking-tight text-white shadow-md ${job.companyTone}`} aria-label={`لوجو ${job.company}`}>
+      <div className="flex min-w-0 items-center gap-3">
+        <div className={`grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full px-1 text-[10px] font-black tracking-tight text-white shadow-md ${job.companyTone}`} aria-label={`لوجو ${job.company}`}>
           {job.companyLogo}
         </div>
-        <div className="min-w-0">
-          <p className="text-xs font-bold text-slate-600">{job.company}</p>
-          <h3 className="text-base font-extrabold leading-relaxed text-brand-900 sm:text-lg">{job.title}</h3>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs font-semibold text-slate-500" title={job.company}>{job.company}</p>
+          {/* العنوان ممكن يبقى طويل — bword يمنع الخروج بره الإطار */}
+          <h3 className="break-words text-base font-extrabold leading-relaxed text-brand-900 sm:text-lg">{job.title}</h3>
         </div>
       </div>
 
-      <p className="mt-4 text-sm font-semibold leading-7 text-slate-700">{job.description}</p>
+      <p className="mt-4 text-sm leading-7 text-slate-600">{job.description}</p>
 
-      <div className="mt-5 grid-cols-1 gap-2.5 text-xs text-slate-700 sm:grid-cols-3">
-        <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/50 px-2.5 py-2 font-bold"><Icon name="money" />{job.salary}</span>
-        <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/50 px-2.5 py-2"><Icon name="location" />{job.location}</span>
-        <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/50 px-2.5 py-2"><Icon name="clock" />{job.schedule}</span>
+      {/*
+        بيانات الوظيفة — 6 حقول في شبكة متجاوبة:
+          موبايل: عمود واحد (كل حقل في سطر عريض ومنيح للقراءة)
+          تابلت: عمودين    |    ديسكتوب: 3 أعمدة
+        الحقول الفاضية بتتشال لوحدها (Chip بترجّع null)، فالكارت مش بيبان
+        فيه فراغات. الحقول الجديدة (المؤهل/الخبرة/نوع الدوام) بقت ظاهرة.
+      */}
+      <div className="mt-5 grid-cols-1 gap-2 text-xs sm:grid-cols-2 sm:gap-2.5 lg:grid-cols-3">
+        <Chip icon="money" label="الراتب" value={job.salary} />
+        <Chip icon="location" label="الموقع" value={job.location} />
+        <Chip icon="clock" label="ساعات العمل" value={job.schedule} />
+        <Chip icon="education" label="المؤهل" value={job.qualification} />
+        <Chip icon="experience" label="الخبرة" value={job.experience} />
+        <Chip icon="type" label="نوع الدوام" value={job.type} />
       </div>
 
       <div className="mt-5">
         <div className="mb-2 flex items-center justify-between text-xs font-bold text-slate-600">
-          <span>مطلوب: {job.required}</span>
-          <span>المتقدمين: {job.applicants}</span>
+          <span>مطلوب: {required}</span>
+          <span>المتقدمين: {applicants}</span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-white/60" role="progressbar" aria-valuenow={job.applicants} aria-valuemin="0" aria-valuemax={job.required} aria-label={`نسبة اكتمال ${job.title}`}>
+        <div className="h-2 overflow-hidden rounded-full bg-white/60" role="progressbar" aria-valuenow={applicants} aria-valuemin="0" aria-valuemax={required} aria-label={`نسبة اكتمال ${job.title}`}>
           <motion.div initial={{ width: 0 }} whileInView={{ width: `${progress}%` }} viewport={{ once: true }} transition={{ duration: 0.8, ease: "easeOut" }} className={`h-full rounded-full ${isFull ? "bg-slate-500" : "bg-gradient-to-l from-brand-400 to-brand-600"}`} />
         </div>
       </div>

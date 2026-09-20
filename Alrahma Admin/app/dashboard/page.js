@@ -3,7 +3,12 @@ import { NAV_ITEMS, SUPER_ADMIN_EMAIL } from "@/lib/adminConfig";
 import { NavIcon, IconGrid } from "@/components/icons";
 import { getJobsStats } from "@/lib/jobs";
 
-export const dynamic = "force-dynamic";
+/*
+ * كان force-dynamic — يعني كل تنقّل بيبني الصفحة من الأول حتى لو مفيش أي
+ * تغيير. ده بيخلي صفحة الرئيسية تعلّم. دلوقتي بنخلي Next يعمل كاش قصير
+ * (30 ثانية)، فالتنقّل للرئيسية فوري، والإحصائيات بتتحدّث تلقائياً.
+ */
+export const revalidate = 30;
 
 // كل الأقسام ما عدا الرئيسية نفسها (دي الصفحة اللي إحنا فيها)
 const CARDS = NAV_ITEMS.filter((item) => item.href !== "/dashboard");
@@ -36,28 +41,24 @@ export default async function DashboardPage() {
         <h1 className="mt-3 text-xl font-extrabold leading-snug text-brand-900 sm:text-2xl">
           أهلاً بيك يا مدير <span className="text-gradient-gold">الرحمة</span>
         </h1>
-        <p className="mt-2 max-w-[38rem] text-[13.5px] leading-relaxed text-brand-900/55">
-          اللوحة اتأسست وبقت شغالة على السيرفر المحلي. الدخول كان بحساب المدير العام،
-          والجلسة محمية من السيرفر. السبعة أقسام اتجهزت في القائمة الجانبية،
-          وهنبرمجهم واحد.
-        </p>
+
 
         <div className="divider-gold my-5" />
 
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-[11px] font-bold uppercase tracking-wider text-brand-900/40">
+            <dt className="text-[11.5px] font-bold uppercase tracking-wider text-brand-900/60">
               الحساب المسجّل
             </dt>
-            <dd className="mt-1 text-[13.5px] font-bold text-brand-900/75" dir="ltr">
+            <dd className="mt-1 text-[14px] font-bold text-brand-900" dir="ltr">
               {SUPER_ADMIN_EMAIL}
             </dd>
           </div>
           <div>
-            <dt className="text-[11px] font-bold uppercase tracking-wider text-brand-900/40">
+            <dt className="text-[11.5px] font-bold uppercase tracking-wider text-brand-900/60">
               الصلاحية
             </dt>
-            <dd className="mt-1 text-[13.5px] font-bold text-gold-600">مدير عام (Super Admin)</dd>
+            <dd className="mt-1 text-[14px] font-bold text-copper-600">مدير عام (Super Admin)</dd>
           </div>
         </dl>
       </section>
@@ -66,10 +67,10 @@ export default async function DashboardPage() {
       <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
         {STAT_CARDS.map(({ label, value }) => (
           <div key={label} className="glass-light rounded-3xl p-5">
-            <p className="text-[11.5px] font-bold uppercase tracking-wider text-brand-900/45">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-brand-900/60">
               {label}
             </p>
-            <p className="mt-2 text-2xl font-extrabold text-brand-900">{value}</p>
+            <p className="mt-2 text-[1.6rem] font-extrabold leading-none text-brand-900">{value}</p>
           </div>
         ))}
       </section>
@@ -86,8 +87,8 @@ export default async function DashboardPage() {
               <NavIcon name={icon} className="h-5 w-5" />
             </span>
             <span className="min-w-0">
-              <span className="block text-[14.5px] font-extrabold text-brand-900">{label}</span>
-              <span className="mt-1 block text-[12.5px] leading-relaxed text-brand-900/50">
+              <span className="block text-[15px] font-extrabold text-brand-900">{label}</span>
+              <span className="mt-1 block text-[13px] font-semibold leading-relaxed text-brand-900/70">
                 {hint}
               </span>
             </span>

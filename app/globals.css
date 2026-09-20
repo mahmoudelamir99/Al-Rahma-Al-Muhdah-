@@ -24,122 +24,72 @@ footer[id] {
   scroll-margin-top: 5rem;
 }
 
-/*
- * ملاحظة على الطبقات:
- * الحاجات دي كاتبينها جوه @layer base عن قصد. القواعد اللي خارج الطبقات
- * بتتكتب في آخر ملف الـ CSS وبتغلب الـ utilities، والنتيجة إنك لو كتبت
- * font-normal أو font-medium في أي كومبوننت مش هتفرق حاجة. دلوقتي الـ
- * utility بتغلب الـ base، والافتراضي الواضح (600) فاضل لكل حاجة مش محدّد لها وزن.
- */
-@layer base {
-  body {
-    background-color: #ffffff;
-    color: #0f172a;
-    max-width: 100%;
-    overflow-x: hidden;
-    /*
-     * وضوح الخط — ده أهم سطر في الموضوع:
-     * الـ antialiased/grayscale بيعملوا حروف رفيعة باهتة على الشاشات العادية،
-     * وده بالظبط اللي بيخلي القراءة متعبة. بنستخدم الوضع الافتراضي (subpixel)
-     * اللي بيدي حروف أسمك وأحدّ، فالخط يبان ثابت ومقروء مش "ناعم".
-     */
-    -webkit-font-smoothing: auto;
-    -moz-osx-font-smoothing: auto;
-    text-rendering: optimizeLegibility;
-
-    /* 600 هو الحد الأدنى للوزن في الموقع كله (مفيش 400 خلاص) */
-    font-weight: 600;
-    /* مسافة أسطر مريحة بشكل عام لخط Cairo */
-    line-height: 1.9;
-    letter-spacing: 0.012em;
-    word-spacing: 0.05em;
-  }
-
-  main,
-  section,
-  footer {
-    max-width: 100%;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  p,
-  span,
-  a,
-  li,
-  label {
-    overflow-wrap: break-word;
-  }
-
-  img,
-  video,
-  svg {
-    max-width: 100%;
-  }
-
-  input,
-  select,
-  textarea,
-  button {
-    max-width: 100%;
-    font-family: inherit;
-    font-weight: 600;
-  }
-
-  option {
-    font-weight: 600;
-  }
-
-  /* العناوين: تباعد أسطر مريح بدون ما تفقد قوة الخط */
-  h1,
-  h2,
-  h3,
-  h4 {
-    line-height: 1.75;
-    letter-spacing: 0.005em;
-    font-weight: 800;
-  }
-
-  /* النصوص الطويلة (الوصف) تتنفس أكتر لتسهيل القراءة */
-  p {
-    line-height: 2;
-    letter-spacing: 0.015em;
-    word-spacing: 0.08em;
-    font-weight: 600;
-  }
-
-  /* الأزرار واللينكات: تباعد بسيط بين الحروف + وزن واضح */
-  button,
-  a,
-  label {
-    letter-spacing: 0.01em;
-  }
-
-  button,
-  a {
-    font-weight: 700;
-  }
+body {
+  background-color: #ffffff;
+  color: #0f172a;
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* مسافة أسطر مريحة بشكل عام لخط Cairo */
+  line-height: 1.9;
+  letter-spacing: 0.012em;
+  word-spacing: 0.05em;
+  overflow-x: hidden;
 }
 
-/*
- * النصوص الرمادية الفاتحة كانت باهتة على الأبيض (slate-400 = #94a3b8)
- * وبتجهد العين. بنرفعها درجة على مستوى الموقع كله، ولاحظ إن الـ utilities
- * (زي font-bold) لسه بتغلب القواعد البسيطة دي، فمفيش أي تعارض.
- */
-p.text-slate-400,
-span.text-slate-400,
-li.text-slate-400 {
-  color: #64748b;
+main,
+section,
+footer {
+  max-width: 100%;
 }
 
-/*
- * slate-300 على الخلفيات الغامقة (الفوتر) — #cbd5e1 أوضح وأقرأ،
- * مع إننا سايبين الأبيض الكامل للعناوين والبيانات المهمة.
- */
-footer .text-slate-300 {
-  color: #dbe2ea;
+h1,
+h2,
+h3,
+h4,
+p,
+span,
+a,
+li,
+label {
+  overflow-wrap: break-word;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+/* العناوين: تباعد أسطر مريح بدون ما تفقد قوة الخط */
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.75;
+  letter-spacing: 0.005em;
+}
+
+/* النصوص الطويلة (الوصف) تتنفس أكتر لتسهيل القراءة */
+p {
+  line-height: 2;
+  letter-spacing: 0.015em;
+  word-spacing: 0.08em;
+}
+
+/* الأزرار واللينكات: تباعد بسيط بين الحروف */
+button,
+a {
+  letter-spacing: 0.01em;
 }
 
 /* تأثير زجاجي جاهز لإعادة الاستخدام */

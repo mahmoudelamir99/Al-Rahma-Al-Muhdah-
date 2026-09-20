@@ -3,14 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import { ADMIN_BRAND, NAV_ITEMS } from "@/lib/adminConfig";
+import { permissionForPath } from "@/lib/rbacConfig";
 import { NavIcon, IconClose, IconExternal, IconMenu, IconBell } from "@/components/icons";
 import LogoutButton from "@/components/LogoutButton";
-
-/* زمن الحركة واحد في كل حتة عشان الإحساس يبقى متناسق */
-const EASE = [0.22, 1, 0.36, 1];
-const DRAWER_SPRING = { type: "spring", stiffness: 320, damping: 34, mass: 0.85 };
 
 /** اللوجو الرسمي داخل الـ Sidebar */
 function BrandMark() {
@@ -26,10 +22,10 @@ function BrandMark() {
         />
       </span>
       <span className="min-w-0">
-        <span className="block truncate text-[14.5px] font-extrabold leading-tight text-brand-900">
+        <span className="block truncate text-[15px] font-extrabold leading-tight text-brand-900">
           {ADMIN_BRAND.shortName}
         </span>
-        <span className="block truncate text-[11.5px] leading-tight text-brand-900/45">
+        <span className="block truncate text-[12px] font-semibold leading-tight text-brand-900/70">
           {ADMIN_BRAND.panelName}
         </span>
       </span>
@@ -37,46 +33,59 @@ function BrandMark() {
   );
 }
 
+/*
+ * ⚡ الأداء: كل عنصر لينك في القائمة كان motion.span بـ layoutId مشترك
+ * (nav-active) على كل عنصر — يعني لكل عنصر قياس مستمر للـ layout، وحساب
+ * إعادة ترتيب في كل تغيير، وحركة بخصائص بتسبب layout. ده كان بيسقّل
+ * الإحساس بالليّ. بدل كده: خلفية ثابتة + حركة على transform/opacity بس.
+ */
+const NAV_ITEM_BASE =
+  "group relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-[14.5px] font-bold transition-colors duration-150";
+
 /** محتوى القائمة — مستخدم في الديسكستوب وفي درج الموبايل */
-function NavList({ pathname, onNavigate }) {
+function NavList({ pathname, onNavigate, permissions = {}, isSuperAdmin = false }) {
   return (
     <nav className="space-y-1.5" aria-label="القائمة الرئيسية">
-      {NAV_ITEMS.map((item) => {
+      {NAV_ITEMS.filter((item) => {
+        const permission = permissionForPath(item.href);
+        return isSuperAdmin || !permission || permissions?.[permission] === true;
+      }).map((item) => {
         const active = pathname === item.href;
         return (
           <Link
             key={item.href}
             href={item.href}
             onClick={onNavigate}
+            prefetch={false}
             aria-current={active ? "page" : undefined}
-            className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-3 text-[14px] font-bold transition-colors duration-200 ease-premium ${
+            className={`${NAV_ITEM_BASE} ${
               active
-                ? "text-brand-700"
-                : "text-brand-900/60 hover:bg-white/70 hover:text-brand-800"
+                ? "bg-brand-50 text-brand-800"
+                : "text-brand-900/75 hover:bg-surface-300/80 hover:text-brand-900"
             }`}
           >
             {active && (
-              <motion.span
-                layoutId="nav-active"
-                transition={DRAWER_SPRING}
-                className="absolute inset-0 -z-10 rounded-2xl border-surface-400 bg-brand-50"
+              <span
+                aria-hidden="true"
+                className="absolute inset-y-2.5 right-0 w-[3px] rounded-full bg-copper-500"
               />
             )}
-            {active && (
-              <span className="absolute inset-y-2.5 right-0 w-[3px] rounded-full bg-copper-500" />
-            )}
             <span
-              className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl transition-colors duration-200 ${
+              className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl transition-colors duration-150 ${
                 active
                   ? "bg-brand-800 text-white"
-                  : "bg-brand-50 text-brand-900/50 group-hover:text-brand-700"
+                  : "bg-surface-300 text-brand-900/70 group-hover:text-brand-800"
               }`}
             >
               <NavIcon name={item.icon} className="h-[18px] w-[18px]" />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate">{item.label}</span>
-              <span className="block truncate text-[11px] font-normal text-brand-900/45">
+              <span
+                className={`block truncate text-[12px] font-semibold ${
+                  active ? "text-brand-900/70" : "text-brand-900/60"
+                }`}
+              >
                 {item.hint}
               </span>
             </span>
@@ -94,17 +103,17 @@ function SidebarFooter() {
         href={ADMIN_BRAND.siteUrl}
         target="_blank"
         rel="noreferrer"
-        className="flex items-center justify-between gap-2 rounded-2xl bg-white/70 px-3.5 py-3 text-[12.5px] font-semibold text-brand-900/65 transition-colors duration-200 hover:bg-white hover:text-brand-800"
+        className="flex items-center justify-between gap-2 rounded-2xl bg-surface-300/70 px-3.5 py-3 text-[13px] font-bold text-brand-900/80 transition-colors duration-150 hover:bg-surface-400/70 hover:text-brand-900"
       >
         <span>زيارة الموقع</span>
-        <IconExternal className="h-4 w-4 shrink-0 text-brand-900/40" />
+        <IconExternal className="h-4 w-4 shrink-0 text-brand-900/60" />
       </a>
       <LogoutButton />
     </div>
   );
 }
 
-export default function AdminShell({ user, children }) {
+export default function AdminShell({ user, admin, isSuperAdmin = false, children }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -161,35 +170,24 @@ export default function AdminShell({ user, children }) {
           <BrandMark />
 
           <div className="mt-7 flex-1 overflow-y-auto pb-2">
-            <p className="mb-2.5 px-1 text-[10.5px] font-bold uppercase tracking-[0.16em] text-brand-900/35">
+            <p className="mb-2.5 px-1 text-[11px] font-bold uppercase tracking-[0.16em] text-brand-900/55">
               التنقل
             </p>
-            <NavList pathname={pathname} />
+            <NavList pathname={pathname} permissions={admin?.permissions} isSuperAdmin={isSuperAdmin} />
           </div>
 
           <SidebarFooter />
         </aside>
 
         {/* ============ Sidebar — درج الموبايل ============ */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <>
-              <motion.div
-                key="drawer-overlay"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
-                onClick={closeMobile}
+        {mobileOpen && (
+          <>
+            <div
+              onClick={closeMobile}
                 className="fixed inset-0 z-40 bg-brand-950/25 lg:hidden"
                 aria-hidden="true"
               />
-              <motion.aside
-                key="drawer"
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={DRAWER_SPRING}
+              <aside
                 role="dialog"
                 aria-modal="true"
                 aria-label="قائمة التنقل"
@@ -201,24 +199,23 @@ export default function AdminShell({ user, children }) {
                     type="button"
                     onClick={closeMobile}
                     aria-label="إغلاق القائمة"
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-900/60 transition-colors duration-200 hover:bg-brand-100 hover:text-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-surface-300 text-brand-900/80 transition-colors duration-150 hover:bg-surface-400 hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
                   >
                     <IconClose className="h-[18px] w-[18px]" />
                   </button>
                 </div>
 
                 <div className="mt-7 flex-1 overflow-y-auto pb-2">
-                  <p className="mb-2.5 px-1 text-[10.5px] font-bold uppercase tracking-[0.16em] text-brand-900/35">
+                  <p className="mb-2.5 px-1 text-[11px] font-bold uppercase tracking-[0.16em] text-brand-900/55">
                     التنقل
                   </p>
-                  <NavList pathname={pathname} onNavigate={closeMobile} />
+                  <NavList pathname={pathname} onNavigate={closeMobile} permissions={admin?.permissions} isSuperAdmin={isSuperAdmin} />
                 </div>
 
                 <SidebarFooter />
-              </motion.aside>
-            </>
-          )}
-        </AnimatePresence>
+              </aside>
+          </>
+        )}
 
         {/* ============ العمود الرئيسي ============ */}
         <div className="flex min-h-[100dvh] min-w-0 flex-1 flex-col">
@@ -227,11 +224,11 @@ export default function AdminShell({ user, children }) {
             <div className="flex h-16 w-full items-center gap-3 px-4 sm:px-6">
               {/* زرار الهامبرجر — موبايل/تابلت بس */}
               <button
-                type="button"
-                onClick={() => setMobileOpen(true)}
-                aria-label="فتح القائمة"
-                aria-expanded={mobileOpen}
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border-brand-100 bg-white text-brand-900/70 shadow-soft transition-colors duration-200 hover:bg-brand-50 hover:text-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 lg:hidden"
+                        type="button"
+                        onClick={() => setMobileOpen(true)}
+                        aria-label="فتح القائمة"
+                        aria-expanded={mobileOpen}
+                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border-brand-100 bg-surface-300/80 text-brand-900/85 shadow-soft transition-colors duration-150 hover:bg-surface-400 hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 lg:hidden"
               >
                 <IconMenu className="h-5 w-5" />
               </button>
@@ -241,7 +238,7 @@ export default function AdminShell({ user, children }) {
                   <p className="truncate text-[15px] font-extrabold leading-tight text-brand-900">
                   {currentItem?.label || "لوحة التحكم"}
                 </p>
-                <p className="hidden truncate text-[11.5px] leading-tight text-brand-900/50 sm:block">
+                <p className="hidden truncate text-[12px] font-semibold leading-tight text-brand-900/70 sm:block">
                   {currentItem?.hint || "إدارة النظام"}
                 </p>
               </div>
@@ -252,7 +249,7 @@ export default function AdminShell({ user, children }) {
                   type="button"
                   aria-label="التنبيهات (قريباً)"
                   title="التنبيهات — قريباً"
-                  className="grid h-10 w-10 cursor-default place-items-center rounded-xl border-brand-100 bg-white text-brand-900/40 shadow-soft"
+                  className="grid h-10 w-10 cursor-default place-items-center rounded-xl border-brand-100 bg-surface-300/80 text-brand-900/60 shadow-soft"
                 >
                   <IconBell className="h-[18px] w-[18px]" />
                 </button>
@@ -268,12 +265,12 @@ export default function AdminShell({ user, children }) {
                 </span>
                 <span className="hidden min-w-0 md:block">
                   <span
-                    className="block max-w-[13rem] truncate text-[12px] font-bold leading-tight text-brand-900/80"
+                    className="block max-w-[13rem] truncate text-[12.5px] font-bold leading-tight text-brand-900"
                     dir="ltr"
                   >
                     {user?.email || "—"}
                   </span>
-                  <span className="block text-[10.5px] leading-tight text-copper-600">
+                  <span className="block text-[11.5px] font-bold leading-tight text-copper-700">
                     مدير عام
                   </span>
                 </span>
@@ -284,19 +281,13 @@ export default function AdminShell({ user, children }) {
 
           {/* المحتوى */}
           <main className="w-full flex-1 px-4 py-6 sm:px-6 sm:py-8">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: EASE }}
-              className="mx-auto w-full max-w-[80rem]"
-            >
+            <div className="mx-auto w-full max-w-[80rem]">
               {children}
-            </motion.div>
+            </div>
           </main>
 
           <footer className="border-t border-brand-100 px-4 py-5 sm:px-6">
-            <p className="text-center text-[11.5px] text-brand-900/45">
+            <p className="text-center text-[12px] font-semibold text-brand-900/65">
               {ADMIN_BRAND.name} — {ADMIN_BRAND.panelName} © {new Date().getFullYear()}
             </p>
           </footer>

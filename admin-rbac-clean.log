@@ -1,0 +1,23 @@
+
+> alrahma-admin@0.1.0 dev
+> next dev -p 3001
+
+   ▲ Next.js 15.5.25
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.1.3:3001
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.7s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 2.4s (170 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 13s (1461 modules)
+ GET / 200 in 14338ms
+ GET / 200 in 337ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 4.1s (1770 modules)
+ GET /dashboard 200 in 6265ms
+ ○ Compiling /dashboard/staff ...
+ ✓ Compiled /dashboard/staff in 831ms (1772 modules)
+ GET /dashboard/staff 200 in 2027ms

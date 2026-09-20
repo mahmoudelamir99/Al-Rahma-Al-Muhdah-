@@ -4,7 +4,14 @@ export const JOBS_TABLE = "jobs";
 
 /**
  * كل الوظائف مرتبة بالأحدث.
- * ملاحظة: بنجيب عدد المتقدمين الحقي من جدول الطلبات ونضمّه لكل وظيفة.
+ *
+ * ⚡ ملاحظة أداء مهمة:
+ * قبل كده كنا بنجيب **كل صفوف جدول الطلبات** بـ select("selected_job") من
+ * غير limit، وبعدين نعدّها في الجافاسكريبت. مع نمو جدول الطلبات ده بيبقى
+ * نقل بيانات ضخم + معالجة في السيرفر على كل فتح للصفحة، وده كان بيسقّع
+ * اللوحة. دلوقتي بنطلب من Supabase **العدد بس** (count: "exact") لكل وظيفة
+ * على حدة — الرحلة نفسها أسرع، والذاكرة المستخدمة أقل، والنقل أكتر بكتير
+ * لأنه مش بينقل صفوف خالص (رقم واحد بس).
  */
 export async function listJobs() {
   const supabase = getSupabaseAdmin();
@@ -16,26 +23,26 @@ export async function listJobs() {
 
   if (error) throw new Error(error.message);
 
-  // عدد المتقدمين الفعلي لكل وظيفة (من جدول طلبات التوظيف)
-  const { data: apps, error: appsError } = await supabase
-    .from(APPLICATIONS_TABLE)
-    .select("selected_job");
+  const rows = jobs || [];
+  if (rows.length === 0) return [];
 
-  if (appsError) {
-    // لو جدول الطلبات لسه مش متاح، منكسرش الصفحة — نرجّع صفر
-    return (jobs || []).map((job) => ({ ...job, applicants: 0, hired: 0 }));
-  }
+  // عدد المتقدمين الفعلي لكل وظيفة — أرقام بس، مفيش نقل صفوف
+  const counts = await Promise.all(
+    rows.map(async (job) => {
+      const title = (job.title || "").trim();
+      if (!title) return 0;
+      const { count, error: countError } = await supabase
+        .from(APPLICATIONS_TABLE)
+        .select("*", { count: "exact", head: true })
+        .eq("selected_job", title);
+      // لو جدول الطلبات لسه مش متاح، منكسرش الصفحة — نرجّع صفر
+      return countError ? 0 : count || 0;
+    })
+  );
 
-  const counts = new Map();
-  for (const row of apps || []) {
-    const key = (row.selected_job || "").trim();
-    if (!key) continue;
-    counts.set(key, (counts.get(key) || 0) + 1);
-  }
-
-  return (jobs || []).map((job) => ({
+  return rows.map((job, index) => ({
     ...job,
-    applicants: counts.get((job.title || "").trim()) || 0,
+    applicants: counts[index] || 0,
   }));
 }
 
