@@ -164,7 +164,27 @@ export async function submitApplication(rawPayload) {
       .single();
 
     if (error) {
-      console.error("[submitApplication] Supabase error:", error.message);
+      console.error("[submitApplication] Supabase error:", error.code, error.message, error.details);
+
+      /*
+       * 🛠️ رسائل دقيقة حسب نوع الخطأ — عشان تشخيص اللايف يبقى سريع.
+       */
+      if (error.code === "42P01" || error.code === "PGRST205") {
+        return { ok: false, error: "جدول الطلبات مش متشغّل على قاعدة البيانات. شغّل ملف supabase/production-all.sql." };
+      }
+      if (error.code === "42703") {
+        return { ok: false, error: `عمود ناقص في جدول job_applications: ${error.message}` };
+      }
+      if (error.code === "23502") {
+        return { ok: false, error: "في حقل مطلوب ناقص في الطلب — راجع البيانات." };
+      }
+      if (error.code === "23514") {
+        return { ok: false, error: "في قيمة غير مسموحة في الطلب (الرقم القومي أو الحالة)." };
+      }
+      if (error.code === "42501") {
+        return { ok: false, error: "صلاحيات قاعدة البيانات مش بتسمح بحفظ الطلب. راجع RLS policies." };
+      }
+
       return { ok: false, error: "تعذّر حفظ الطلب، جرّب تاني بعد لحظات." };
     }
 

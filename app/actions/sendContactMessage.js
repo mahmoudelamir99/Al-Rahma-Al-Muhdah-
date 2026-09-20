@@ -80,7 +80,29 @@ export async function sendContactMessage(rawPayload) {
       .single();
 
     if (error) {
-      console.error("[sendContactMessage] Supabase error:", error.message);
+      console.error("[sendContactMessage] Supabase error:", error.code, error.message, error.details);
+
+      /*
+       * 🛠️ بنفرّق بين أنواع المشاكل عشان تكون مفهومة وقت التشغيل على اللايف،
+       * بدل رسالة عامة ما بتقولش حاجة:
+       *  42P01 / PGRST205 → الجدول نفسه مش موجود (محتاج تشغيل SQL)
+       *  42703           → عمود ناقص (الـ schema مش متطابق)
+       *  23514 / 23502   → قيد/قيمة مطلوبة غلط
+       *  42501           → صلاحيات (RLS)
+       */
+      if (error.code === "42P01" || error.code === "PGRST205") {
+        return { ok: false, error: "جدول الرسائل مش متشغّل على قاعدة البيانات. شغّل ملف supabase/production-all.sql." };
+      }
+      if (error.code === "42703") {
+        return { ok: false, error: `عمود ناقص في جدول contact_messages: ${error.message}` };
+      }
+      if (error.code === "23502" || error.code === "23514") {
+        return { ok: false, error: "في حقل مطلوب ناقص أو قيمة غير مسموحة — راجع بياناتك." };
+      }
+      if (error.code === "42501") {
+        return { ok: false, error: "صلاحيات قاعدة البيانات مش بتسمح بالإرسال. راجع RLS policies." };
+      }
+
       return { ok: false, error: "تعذّر إرسال الرسالة، جرّب تاني بعد لحظات." };
     }
 
