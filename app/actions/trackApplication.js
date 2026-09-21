@@ -165,7 +165,13 @@ export async function cancelApplication({ id, phoneNumber, nationalId: nationalI
   const nationalId = normalizeNationalId(nationalIdInput);
   if (!id || !PHONE_REGEX.test(phone)) return { ok: false, error: "بيانات التحقق غير صحيحة." };
   try {
-    const { error } = await matchApplication(
+    /*
+     * 🐛 إصلاح: قبل كده كنا بنعمل Destructure لـ `error` بس، وبعدين نرجّع
+     * `application: data` — والمتغير `data` مش موجودة أصلاً، فالكود كان بيرمي
+     * ReferenceError، ولو حصل فشل يبقى بيتم قتله ويرجّع رسالة الإلغاء الفاشلة
+     * حتى لما اللإلغاء ينجح. دلوقتي بنستقبل `data` كمان ونرجّعها صح.
+     */
+    const { data, error } = await matchApplication(
       getSupabaseAdmin().from(APPLICATIONS_TABLE).update({ status: "cancelled", cancellation_reason: normalize(reason) || null }),
       phone,
       nationalId
