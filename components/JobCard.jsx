@@ -50,13 +50,15 @@ function Icon({ name }) {
 /**
  * شارة معلومة واحدة في الكارت — تصميم زجاجي خفيف مع أيقونة صغيرة.
  *
- * ملاحظات مهمة عن التخطيط:
- *  - min-w-0 + truncate: لو النص طويل (زي "بكالوريوس هندسة مدنية") بيتقص
- *    بنقط بدل ما يخرج بره الإطار — دي أهم نقطة لمنع الكسر على الموبايل.
- *  - title: النص الكامل بيبان لما المستخدم يقف بالماوس.
+ * ملاحظات مهمة عن التخطيط (بعد ملاحظة العميل):
+ *  - مفيش أي truncate خالص: الكلام يبان كامل. المربع بياخد عرض المحتوى
+ *    (w-fit) وبيحترم max-w-full عشان ما يخرجش بره الكارت.
+ *  - لو النص طويل (زي "بكالوريوس هندسة مدنية") بينزل سطر جوه المربع
+ *    (break-words + leading) بدل ما يتقطع بنقط والتخطيط يتزنق.
+ *  - الأيقونة والنص على سطر واحد (items-center) بمسافات مريحة للعين.
  *  - shrink-0 على الأيقونة: الحروف متضغطش عليها.
  */
-function Chip({ icon, label, value, hint }) {
+function Chip({ icon, value }) {
   /*
    * الحقل الفاضي يختفي تماماً: لا أيقونة ولا نص — وكمان لو القيمة نص فاضي
    * أو شرطة ("-" / "—") بنعتبرها فاضية. ده بيمنع أي أثر لـ "يُحدد لاحقاً"
@@ -65,17 +67,12 @@ function Chip({ icon, label, value, hint }) {
   const text = typeof value === "string" ? value.trim() : value;
   if (!text || text === "-" || text === "—") return null;
   return (
-    <div className="flex min-w-0 items-center gap-2 rounded-xl bg-white/55 px-2.5 py-2 ring-1 ring-inset ring-white/60">
-      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-brand-500/10 text-brand-600">
+    <div className="inline-flex max-w-full items-center gap-2.5 rounded-xl bg-white/60 px-3 py-2 ring-1 ring-inset ring-white/70">
+      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-brand-500/10 text-brand-600">
         <Icon name={icon} />
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">
-          {label}
-        </span>
-        <span className="block truncate text-xs font-semibold text-slate-700" title={text}>
-          {text}
-        </span>
+      <span className="min-w-0 text-xs font-semibold leading-6 text-slate-700 [overflow-wrap:anywhere]">
+        {text}
       </span>
     </div>
   );
@@ -182,11 +179,11 @@ export default function JobCard({ job, onApply }) {
       <p className="mt-4 text-sm leading-7 text-slate-600">{job.description}</p>
 
       {/*
-        بيانات الوظيفة — 6 حقول في شبكة متجاوبة:
-          موبايل: عمود واحد (كل حقل في سطر عريض ومنيح للقراءة)
-          تابلت: عمودين    |    ديسكتوب: 3 أعمدة
+        بيانات الوظيفة — flex flex-wrap بدل Grid ثابت:
+        المربعات بتترص جنب بعض براحتها حسب طول الكلام، وبعدين تنزل السطر
+        اللي بعده لو الشاشة صغرت (Responsive طبيعي من غير أعمدة مخنوقة).
         الحقول الفاضية بتتشال لوحدها (Chip بترجّع null)، ولو كلها فاضية
-        الشبكة بتختفي كلها من غير ما تسيب فراغ في الكارت.
+        البلوك بيختفي كلها من غير ما يسيب فراغ في الكارت.
       */}
       {[job.salary, job.location, job.schedule, job.qualification, job.experience, job.type].some(
         (value) => {
@@ -194,13 +191,13 @@ export default function JobCard({ job, onApply }) {
           return Boolean(text) && text !== "-" && text !== "—";
         }
       ) && (
-        <div className="mt-5 grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 sm:gap-2.5 lg:grid-cols-3">
-          <Chip icon="money" label="الراتب" value={job.salary} />
-          <Chip icon="location" label="الموقع" value={job.location} />
-          <Chip icon="clock" label="ساعات العمل" value={job.schedule} />
-          <Chip icon="education" label="المؤهل" value={job.qualification} />
-          <Chip icon="experience" label="الخبرة" value={job.experience} />
-          <Chip icon="type" label="نوع الدوام" value={job.type} />
+        <div className="mt-5 flex flex-wrap gap-2 sm:gap-2.5">
+          <Chip icon="money" value={job.salary} />
+          <Chip icon="location" value={job.location} />
+          <Chip icon="clock" value={job.schedule} />
+          <Chip icon="education" value={job.qualification} />
+          <Chip icon="experience" value={job.experience} />
+          <Chip icon="type" value={job.type} />
         </div>
       )}
 

@@ -92,8 +92,12 @@ function Shield3DIcon() {
   );
 }
 
-/* القيم/المميزات — ثابتة بره الكومبوننت */
-const FEATURES = [
+/*
+ * القيم الافتراضية للمميزات — بتُستخدم كـ Fallback لو الأدمن لسه ما عدّلش
+ * القيم في الـ CMS (أو الأعمدة لسه فاضية). الترتيب هنا ثابت وبيتحكم في
+ * الأيقونة واللون بتاع كل كارت (لأن الأيقونة نفسها مش قابلة للتعديل من اللوحة).
+ */
+const FEATURE_FALLBACKS = [
   {
     title: "مجاني تماماً",
     desc: "لا توجد اي رسوم تماما للباحثين عن عمل",
@@ -114,8 +118,31 @@ const FEATURES = [
   },
 ];
 
+/**
+ * نبني قائمة المميزات من إعدادات الـ CMS مع الحفاظ على الأيقونة/اللون
+ * لكل خانة حسب ترتيبها.
+ *
+ * الملاحظة المهمة: أي قيمة فاضية (أو العمود لسه مش موجود في الجدول)
+ * بتقع على النص الافتراضي — عشان المميزات ما تختفيش أبداً بالِغلط.
+ * الإخفاء بيتم بشكل مقصود من الـ CMS عبر مفتاح features_enabled.
+ */
+function buildFeatures(settings) {
+  return FEATURE_FALLBACKS.map((fallback, index) => {
+    const n = index + 1;
+    const title = String(settings[`feature_${n}_title`] ?? "").trim();
+    const desc = String(settings[`feature_${n}_text`] ?? "").trim();
+    return {
+      ...fallback,
+      title: title || fallback.title,
+      desc: desc || fallback.desc,
+    };
+  });
+}
+
 export default function About({ settings = {} }) {
   const aboutText = settings.about_text || ABOUT_TEXT;
+  const featuresEnabled = settings.features_enabled ?? true;
+  const features = featuresEnabled ? buildFeatures(settings) : [];
   return (
     <section
       id="about"
@@ -176,33 +203,39 @@ export default function About({ settings = {} }) {
             </p>
           </div>
 
-          {/* المميزات — عرض كامل بتقسيمة متساوية */}
-          <div className="grid gap-3 border-t border-white/60 bg-white/30 p-5 sm:grid-cols-3 sm:gap-4 sm:p-8">
-            {FEATURES.map((item, index) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.45, delay: 0.1 + index * 0.09 }}
-                className="group/feat flex items-start gap-3 rounded-2xl border-white/70 bg-white/70 p-4 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-brand-300/70 hover:shadow-lg hover:shadow-brand-900/10"
-              >
-                {/*
-                  بلوك الأيقونة: برواز زجاجي ملوّن (حسب لون كل ميزة) بيتحط
-                  جواه أيقونة الـ 3D. البرواز بيتكهرب (glow) مع الـ hover.
-                */}
-                <span
-                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${item.glow} p-1 ring-1 ring-inset ring-white/60 shadow-inner shadow-white/40 transition-transform duration-300 group-hover/feat:scale-110`}
+          {/*
+            المميزات — عرض كامل بتقسيمة متساوية.
+            لو الأدمن قفل القسم من الـ CMS (features_enabled = false) أو
+            مسح كل الكروت، البلوك كله بيختفي (مفيش حدود ولا خلفية ولا فراغ).
+          */}
+          {features.length > 0 && (
+            <div className="grid gap-3 border-t border-white/60 bg-white/30 p-5 sm:grid-cols-3 sm:gap-4 sm:p-8">
+              {features.map((item, index) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ duration: 0.45, delay: 0.1 + index * 0.09 }}
+                  className="group/feat flex items-start gap-3 rounded-2xl border-white/70 bg-white/70 p-4 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-brand-300/70 hover:shadow-lg hover:shadow-brand-900/10"
                 >
-                  {item.icon}
-                </span>
-                <span className="min-w-0">
-                  <p className="text-sm font-extrabold text-brand-900">{item.title}</p>
-                  <p className="mt-1 text-xs leading-6 text-slate-500 [text-wrap:pretty]">{item.desc}</p>
-                </span>
-              </motion.div>
-            ))}
-          </div>
+                  {/*
+                    بلوك الأيقونة: برواز زجاجي ملوّن (حسب لون كل ميزة) بيتحط
+                    جواه أيقونة الـ 3D. البرواز بيتكهرب (glow) مع الـ hover.
+                  */}
+                  <span
+                    className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${item.glow} p-1 ring-1 ring-inset ring-white/60 shadow-inner shadow-white/40 transition-transform duration-300 group-hover/feat:scale-110`}
+                  >
+                    {item.icon}
+                  </span>
+                  <span className="min-w-0">
+                    <p className="text-sm font-extrabold text-brand-900">{item.title}</p>
+                    <p className="mt-1 text-xs leading-6 text-slate-500 [text-wrap:pretty]">{item.desc}</p>
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

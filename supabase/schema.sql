@@ -64,6 +64,12 @@ alter table public.job_applications
   add column if not exists address text;
 alter table public.job_applications
   add column if not exists cancellation_reason text;
+-- الأرشيف (Soft Delete): الطلب المحذوف ناعماً يفضل في الجدول بـ deleted_at
+-- مش null (يظهر في الأرشيف)، والقائمة الرئيسية بتفلتر deleted_at is null.
+alter table public.job_applications
+  add column if not exists deleted_at timestamptz;
+alter table public.job_applications
+  add column if not exists deleted_by text;
 
 alter table public.job_applications
   drop constraint if exists job_applications_national_id_check;
