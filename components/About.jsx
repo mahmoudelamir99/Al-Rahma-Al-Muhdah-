@@ -96,7 +96,7 @@ function Shield3DIcon() {
 const FEATURES = [
   {
     title: "مجاني تماماً",
-    desc: "مفيش أي رسوم على الباحثين عن عمل",
+    desc: "لا توجد اي رسوم تماما للباحثين عن عمل",
     icon: <Money3DIcon />,
     glow: "from-amber-400/30 to-amber-600/10",
   },

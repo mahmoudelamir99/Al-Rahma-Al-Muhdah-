@@ -7,8 +7,8 @@ import {
   COMPANY,
   CONTACT,
   NAV_LINKS,
-  WHATSAPP_LINK,
   ABOUT_TEXT,
+  buildWhatsAppLink,
 } from "@/lib/siteConfig";
 
 /* أيقونة واتساب */
@@ -103,6 +103,17 @@ export default function Footer({ settings = {} }) {
   const contactAddress = settings?.contact_address || CONTACT.addressLines.join(" — ");
   const contactPhones = settings?.contact_phones || CONTACT.whatsappNumber;
   const socialLinks = settings?.social_links || {};
+  /*
+   * النص الوصفي في الفوتر بيقرا من site_settings.about_text — نفس النص اللي
+   * في قسم "من نحن" — عشان لما العميل يعدّله من الـ CMS يسمع في الفوتر كمان.
+   * ولو الأدمن ماسبهوش فاضي، بنوقع على النص الثابت في siteConfig.
+   */
+  const aboutText = settings?.about_text || ABOUT_TEXT;
+  /*
+   * رابط الواتساب بيتبني من الرقم اللي الأدمن حفظه في الـ CMS (contact_phones)
+   * مش من الرقم الثابت — عشان أي تغيير في الرقم يسمع في الفوتر فورًا.
+   */
+  const whatsappLink = buildWhatsAppLink(contactPhones);
 
   return (
     <footer id="contact" className="relative scroll-mt-16 overflow-hidden bg-brand-950 text-slate-300">
@@ -141,12 +152,12 @@ export default function Footer({ settings = {} }) {
             </div>
 
             <p className="mt-4 max-w-md text-xs leading-8 text-slate-400 sm:text-sm">
-              {ABOUT_TEXT}
+              {aboutText}
             </p>
 
             {whatsappEnabled && (
               <motion.a
-                href={WHATSAPP_LINK}
+                href={whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.03 }}
@@ -224,7 +235,7 @@ export default function Footer({ settings = {} }) {
                   </span>
                   {" — "}
                   <a
-                    href={WHATSAPP_LINK}
+                    href={whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     dir="ltr"

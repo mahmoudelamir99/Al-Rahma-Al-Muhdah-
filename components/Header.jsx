@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { NAV_LINKS, WHATSAPP_LINK, COMPANY } from "@/lib/siteConfig";
+import { NAV_LINKS, COMPANY, CONTACT, buildWhatsAppLink } from "@/lib/siteConfig";
 import TrackApplicationModal from "./TrackApplicationModal";
 import ContactModal from "./ContactModal";
 
@@ -79,10 +79,13 @@ function MenuIcon({ open }) {
   );
 }
 
-export default function Header({ whatsappEnabled = true }) {
+export default function Header({ whatsappEnabled = true, contactPhones = CONTACT.whatsappNumber }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [trackOpen, setTrackOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+
+  // رابط الواتساب بيتبني من الرقم اللي الأدمن حفظه في الـ CMS (مش ثابت)
+  const whatsappLink = buildWhatsAppLink(contactPhones);
 
   /*
    * لينك "تواصل معنا" في الهيدر مش بيعمل Scroll لتحت خالص — بيفتح
@@ -176,7 +179,7 @@ export default function Header({ whatsappEnabled = true }) {
         {/* زرار واتساب - على الشمال (بيختفي لو الأدمن وقّفه من لوحة التحكم) */}
         {whatsappEnabled && (
           <motion.a
-            href={WHATSAPP_LINK}
+            href={whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{
@@ -244,7 +247,7 @@ export default function Header({ whatsappEnabled = true }) {
       </AnimatePresence>
       {/* فورم التواصل — Bottom Sheet على الموبايل / مودال على الديسكتوب */}
       <AnimatePresence>
-        {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />}
+        {contactOpen && <ContactModal contactPhones={contactPhones} onClose={() => setContactOpen(false)} />}
       </AnimatePresence>
     </motion.header>
   );

@@ -24,7 +24,10 @@ export default async function Home() {
 
   return (
     <>
-      <Header whatsappEnabled={settings.whatsapp_enabled} />
+      <Header
+        whatsappEnabled={settings.whatsapp_enabled}
+        contactPhones={settings.contact_phones}
+      />
       <main>
         <Hero settings={settings} />
         <About settings={settings} />

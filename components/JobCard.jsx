@@ -57,7 +57,13 @@ function Icon({ name }) {
  *  - shrink-0 على الأيقونة: الحروف متضغطش عليها.
  */
 function Chip({ icon, label, value, hint }) {
-  if (!value) return null; // حقل فاضي مش بياخد مساحة
+  /*
+   * الحقل الفاضي يختفي تماماً: لا أيقونة ولا نص — وكمان لو القيمة نص فاضي
+   * أو شرطة ("-" / "—") بنعتبرها فاضية. ده بيمنع أي أثر لـ "يُحدد لاحقاً"
+   * أو "-" مهما جت من أي مصدر.
+   */
+  const text = typeof value === "string" ? value.trim() : value;
+  if (!text || text === "-" || text === "—") return null;
   return (
     <div className="flex min-w-0 items-center gap-2 rounded-xl bg-white/55 px-2.5 py-2 ring-1 ring-inset ring-white/60">
       <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-brand-500/10 text-brand-600">
@@ -67,8 +73,8 @@ function Chip({ icon, label, value, hint }) {
         <span className="block text-[10px] font-bold uppercase tracking-wide text-slate-400">
           {label}
         </span>
-        <span className="block truncate text-xs font-semibold text-slate-700" title={value}>
-          {value}
+        <span className="block truncate text-xs font-semibold text-slate-700" title={text}>
+          {text}
         </span>
       </span>
     </div>
@@ -179,17 +185,24 @@ export default function JobCard({ job, onApply }) {
         بيانات الوظيفة — 6 حقول في شبكة متجاوبة:
           موبايل: عمود واحد (كل حقل في سطر عريض ومنيح للقراءة)
           تابلت: عمودين    |    ديسكتوب: 3 أعمدة
-        الحقول الفاضية بتتشال لوحدها (Chip بترجّع null)، فالكارت مش بيبان
-        فيه فراغات. الحقول الجديدة (المؤهل/الخبرة/نوع الدوام) بقت ظاهرة.
+        الحقول الفاضية بتتشال لوحدها (Chip بترجّع null)، ولو كلها فاضية
+        الشبكة بتختفي كلها من غير ما تسيب فراغ في الكارت.
       */}
-      <div className="mt-5 grid-cols-1 gap-2 text-xs sm:grid-cols-2 sm:gap-2.5 lg:grid-cols-3">
-        <Chip icon="money" label="الراتب" value={job.salary} />
-        <Chip icon="location" label="الموقع" value={job.location} />
-        <Chip icon="clock" label="ساعات العمل" value={job.schedule} />
-        <Chip icon="education" label="المؤهل" value={job.qualification} />
-        <Chip icon="experience" label="الخبرة" value={job.experience} />
-        <Chip icon="type" label="نوع الدوام" value={job.type} />
-      </div>
+      {[job.salary, job.location, job.schedule, job.qualification, job.experience, job.type].some(
+        (value) => {
+          const text = typeof value === "string" ? value.trim() : value;
+          return Boolean(text) && text !== "-" && text !== "—";
+        }
+      ) && (
+        <div className="mt-5 grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 sm:gap-2.5 lg:grid-cols-3">
+          <Chip icon="money" label="الراتب" value={job.salary} />
+          <Chip icon="location" label="الموقع" value={job.location} />
+          <Chip icon="clock" label="ساعات العمل" value={job.schedule} />
+          <Chip icon="education" label="المؤهل" value={job.qualification} />
+          <Chip icon="experience" label="الخبرة" value={job.experience} />
+          <Chip icon="type" label="نوع الدوام" value={job.type} />
+        </div>
+      )}
 
       <div className="mt-5">
         <div className="mb-2 flex items-center justify-between text-xs font-bold text-slate-600">

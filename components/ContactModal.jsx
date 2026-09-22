@@ -31,7 +31,7 @@ const fieldClass = (invalid, disabled) =>
  * بنستخدم ModalPortal عشان المودال يتثبت على حدود الشاشة مهما كان الأب
  * عنده transform/overflow (ده اللي كان بيكسر الـ fixed قبل كده).
  */
-export default function ContactModal({ onClose }) {
+export default function ContactModal({ contactPhones = CONTACT.whatsappNumber, onClose }) {
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
@@ -207,7 +207,7 @@ export default function ContactModal({ onClose }) {
               </button>
 
               <p className="text-center text-[11px] text-slate-400">
-                أو كلّمنا مباشرة على واتساب: {CONTACT.whatsappNumber}
+                أو كلّمنا مباشرة على واتساب: {contactPhones}
               </p>
             </form>
           )}
